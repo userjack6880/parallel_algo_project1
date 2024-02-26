@@ -144,7 +144,7 @@ void server(int argc, char *argv[], int numProcessors) {
       if (!firstRun) {
         MPI_Request request;
         MPI_Status status;
-        int flag;
+        int flag = 0;
         int recvPacket;
 
         // cout << "waiting for data from clients" << endl;
