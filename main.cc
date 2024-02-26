@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
-#include <unistd>
+#include <unistd.h>
 
 // C++ stadard library using statements
 using std::cout;
