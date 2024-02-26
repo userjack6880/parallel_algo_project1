@@ -99,7 +99,8 @@ void server(int argc, char *argv[], int numProcessors) {
   int count = 0;
   int numGames = 0;
   int packetSize = 1;
-  int maxPacket = 0;
+  int maxPacket = 1;
+  int packetMax = 25;
 
   // get the number of games from the input file
   input >> numGames;
@@ -225,13 +226,20 @@ void server(int argc, char *argv[], int numProcessors) {
             gameIndex++;
           }
 
+          // if we're waiting on a client, we have too much for them to do
+          if (packetSize > 1) {
+            packetSize--;
+          }
+
           // now wait
           MPI_Wait(&request, &status);
           flag = 1;
         }
         else {
           // if the clients are too fast, then there's not enough for the clients to do
-          packetSize++;
+//          if (packetSize < packetMax) {
+            packetSize++;
+//          }
         }
 
         // reduce packet size to 1 if gameIndex + packetSize would not be valid
