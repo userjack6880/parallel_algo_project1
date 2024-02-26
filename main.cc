@@ -132,7 +132,7 @@ void server(int argc, char *argv[], int numProcessors) {
     // quick sanity check to see if breaking the probem up is worth doing
     if ((numProcessors - 1 ) * packetSize > numGames) {
       // output warning and reduce packetSize to 1
-      count << "There are less games than initial problem breakdown. Reducing packet size to 1!" << endl;
+      cout << "There are less games than initial problem breakdown. Reducing packet size to 1!" << endl;
       packetSize = 1;
     }
 
@@ -140,7 +140,7 @@ void server(int argc, char *argv[], int numProcessors) {
     for (int i = 1; i < numProcessors; i++) {
       // get a number of games based on packetSize
       string inputStrings[packetSize];
-      for int (j = 0; j < packetSize; j++) {
+      for (int j = 0; j < packetSize; j++) {
         input >> inputStrings[j];
 
         if (inputStrings[j].size() != IDIM*JDIM) {
