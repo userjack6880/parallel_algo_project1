@@ -193,7 +193,7 @@ void server(int argc, char *argv[], int numProcessors) {
         }
         else {
           // if the clients are too fast, then there's not enough for the clients to do
-          packetSize++;
+          packetSize *= 2;
         }
 
         // reduce packet size to 1 if gameIndex + packetSize would not be valid
