@@ -159,7 +159,13 @@ void server(int argc, char *argv[], int numProcessors) {
       packageGames(&buf, inputStrings, packetSize);
       cout << "packaged!" << endl;
 
-      cout << inputStrings[1] << " " << buf[i] << endl;
+      cout << inputStrings[1] << " ";
+
+      for (int j = 0; j < 20; j++) {
+        cout << buf[j];
+      }
+
+      cout << endl;
     }
   }
   // Report how cases had a solution.
