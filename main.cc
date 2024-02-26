@@ -99,6 +99,7 @@ void server(int argc, char *argv[], int numProcessors) {
   int count = 0;
   int numGames = 0;
   int packetSize = 1;
+  int maxPacket = 0;
 
   // get the number of games from the input file
   input >> numGames;
@@ -197,6 +198,9 @@ void server(int argc, char *argv[], int numProcessors) {
 
         // reduce packet size to 1 if gameIndex + packetSize would not be valid
         if (gameIndex + packetSize > numGames) {
+          if (packetSize > maxPacket) {
+            maxPacket = packetSize;
+          }
           packetSize = 1;
         }
 
@@ -251,7 +255,7 @@ void server(int argc, char *argv[], int numProcessors) {
       MPI_Send(&kill, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
     }
 
-    cout << "Processed " << gameIndex << " games with maximum packet size of " << packetSize << "." << endl;
+    cout << "Processed " << gameIndex << " games with maximum packet size of " << maxPacket << "." << endl;
   }
   // Report how cases had a solution.
   cout << "found " << count << " solutions" << endl ;
