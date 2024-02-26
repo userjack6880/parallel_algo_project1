@@ -98,7 +98,7 @@ void server(int argc, char *argv[], int numProcessors) {
   
   int count = 0;
   int numGames = 0;
-  int packetSize = 5; // arbitary number
+  int packetSize = 1;
 
   // get the number of games from the input file
   input >> numGames;
@@ -166,9 +166,17 @@ void server(int argc, char *argv[], int numProcessors) {
 
     // run through the input
     int firstRun = 1;
-    while (gameIndex + packetSize < numGames) {
-      // check to see if any clients have data for us, if it's not the first round
-      if (!firstRun) {
+    while (1) {
+      // first run
+      if (firstRun) {
+        // get the data and send two packets to each client - an array of game indexes
+        // and gameboards
+        for (int i = 0; i < numProcessors; i++) {
+          sendData(packetSize, input, gameIndex, inputStrings, i + 1);
+        }
+        firstRun = 0;
+      }
+      else {
         MPI_Request request;
         MPI_Status status;
         int flag = 0;
@@ -185,6 +193,11 @@ void server(int argc, char *argv[], int numProcessors) {
         else {
           // if the clients are too fast, then there's not enough for the clients to do
           packetSize++;
+        }
+
+        // reduce packet size to 1 if gameIndex + packetSize would not be valid
+        if (gameIndex + packetSize > numGames) {
+          packetSize = 1;
         }
 
         // if there's something, let's get the rest of the data
@@ -204,14 +217,11 @@ void server(int argc, char *argv[], int numProcessors) {
           // send data back to the client
           sendData(packetSize, input, gameIndex, inputStrings, source);
         }
-      }
-      else {
-        // get the data and send two packets to each client - an array of game indexes
-        // and gameboards
-        for (int i = 0; i < numProcessors; i++) {
-          sendData(packetSize, input, gameIndex, inputStrings, i + 1);
+
+        // breakout of while loop if the game index has moved to the end
+        if (gameIndex == numGames) {
+          break;
         }
-        firstRun = 0;
       }
     }
 
