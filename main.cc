@@ -149,7 +149,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
         // cout << "waiting for data from clients" << endl;
         MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
-        MPI_Test(&request, &flag &status);
+        MPI_Test(&request, &flag, &status);
 
         if (!flag) {
           MPI_Wait(&request, &status);
