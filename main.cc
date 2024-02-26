@@ -139,7 +139,6 @@ void server(int argc, char *argv[], int numProcessors) {
     // run through the input
     int firstRun = 1;
     while (gameIndex + packetSize < numGames) {
-      cout << "game index " << gameIndex << endl;
       // check to see if any clients have data for us, if it's not the first round
       if (!firstRun) {
         MPI_Request request;
@@ -149,7 +148,6 @@ void server(int argc, char *argv[], int numProcessors) {
         int indexBuf[recvPacket];
         int solutionBuf[recvPacket];
 
-        cout << "checking for data" << endl;
         MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
         MPI_Test(&request, &flag, MPI_STATUS_IGNORE);
         // if there's something, let's get the rest of the data
