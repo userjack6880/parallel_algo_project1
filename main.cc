@@ -227,7 +227,7 @@ void client(int myID) {
       cout << "client " << myID << ": I've been told to quit" << endl;
       MPI_Finalize();
     }
-
+    cout << "client " << myID << ": I got data" << endl;
     int bufIndex[packetSize];
     MPI_Recv(&bufIndex, packetSize, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     int dataSize;
