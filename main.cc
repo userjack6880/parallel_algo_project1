@@ -249,7 +249,7 @@ void client(int myID) {
   MPI_Send(&solutions, packetSize, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
   // cleanup memory
-  delte[] buf;
+  delete[] buf;
 }
 
 int main(int argc, char *argv[]) {
