@@ -161,10 +161,10 @@ void server(int argc, char *argv[], int numProcessors) {
 
           int die = 0;
           MPI_Send(&die, 1, MPI_INT, source, 0, MPI_COMM_WORLD);
-        }
 
-        // increase the game index
-        gameIndex += packetSize;
+          // increase the game index
+          gameIndex += packetSize;
+        }
       }
       else {
         // get the data and send two packets to each client - an array of game indexes
