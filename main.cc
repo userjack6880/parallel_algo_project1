@@ -70,9 +70,8 @@ void server(int argc, char *argv[], int numProcessors) {
   input >> numGames;
 
 
-  // if the number of processors is 1, the server is the only processor
-  // so be the only processor to solve the problem
-  if (numProcessors == 1) {
+  // if the number of processors is 0, the server is now the processor
+  if (numProcessors + 1 == 1) {
     for (int i = 0; i < numGames; i++) {  // for each game in file...
       string inputString;
       input >> inputString;
@@ -130,30 +129,24 @@ void server(int argc, char *argv[], int numProcessors) {
     int gameIndex = 0;
 
     // quick sanity check to see if breaking the probem up is worth doing
-    if ((numProcessors - 1 ) * packetSize > numGames) {
+    if (numProcessors * packetSize > numGames) {
       // output warning and reduce packetSize to 1
       cout << "There are less games than initial problem breakdown. Reducing packet size to 1!" << endl;
       packetSize = 1;
     }
 
     // run through the input
-    int currentClient = 1;
+    int firstRun = 1;
     while (gameIndex + packetSize < numGames) {
-      // check if client is ready
-      cout << "asking client " << currentClient << " if they are ready" << endl;
-      int msgBuf = 1; // message 1 is "ready?" - response should match if true, 0 if not
-      MPI_Request request;
-      MPI_Isend(&msgBuf, 1, MPI_INT, currentClient, 1, MPI_COMM_WORLD, &request);
-      msgBuf = 0;
-      MPI_Test(&request, &msgBuf, MPI_STATUS_IGNORE);
-
-      // if client is not ready, then we move onto the next one
-      if (!msgBuf) {
-        currentClient++;
-        if (currentClient > numProcessors) {
-          currentClient = 1;
+      // check to see if any clients have data for us, if it's not the first round
+      if (!firstRun) {
+        break;
+      }
+      else {
+        for (int i = 0; i < numProcessors; i++) {
+          cout << "allocating initial data for client " << i + 1 << endl;
         }
-        continue;
+        firstRun = 0;
       }
 
       // // get a number of games based on packetSize
@@ -170,11 +163,6 @@ void server(int argc, char *argv[], int numProcessors) {
       // // package it into a single charater array
       // char* buf;
       // packageGames(&buf, inputStrings, packetSize);
-
-      currentClient++;
-      if (currentClient > numProcessors) {
-        currentClient = 1;
-      }
     }
   }
   // Report how cases had a solution.
@@ -184,19 +172,6 @@ void server(int argc, char *argv[], int numProcessors) {
 // Put the code for the client here
 void client(int myID) {
   cout << "hi, I'm client " << myID << endl;
-  // wait for ready query from server
-  int msgBuf = 1;
-  MPI_Recv(&msgBuf, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-  if (msgBuf == 1) {
-    cout << "client " << myID << ": recieved a ready query from server" << endl;
-  }
-  else {
-    cerr << "client " << myID << ": recieved malformed query from server" << endl;
-    MPI_Abort(MPI_COMM_WORLD,-1);
-  }
-  
-  // send ready message to server
 }
 
 
