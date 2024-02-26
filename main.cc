@@ -165,6 +165,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
 // Put the code for the client here
 void client(int myID) {
+  cout << "hi, I'm client " << myID << endl;
   // wait for ready query from server
   int msgBuf = 1;
   MPI_Status status;
