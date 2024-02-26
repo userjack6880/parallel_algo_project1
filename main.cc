@@ -152,7 +152,6 @@ void server(int argc, char *argv[], int numProcessors) {
         MPI_Test(&request, &flag, &status);
 
         cout << "flag: " << flag << endl;
-        break;
 
         // if there's something, let's get the rest of the data
         if (flag) {
