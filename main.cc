@@ -146,7 +146,7 @@ void server(int argc, char *argv[], int numProcessors) {
         int recvPacket;
 
         cout << "waiting for data from clients" << endl;
-        MPI_Recv(&recvPacket, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&recvPacket, 1, MPI_INT, MPI_SOURCE_ANY, 0, MPI_COMM_WORLD, &status);
         // if there's something, let's get the rest of the data
         int indexBuf[recvPacket];
         int solutionBuf[recvPacket];
