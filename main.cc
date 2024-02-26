@@ -225,7 +225,7 @@ void client(int myID) {
 
     // initialize the game
     game_state gameBoard;
-    gameBoard.Init(boardStates[i]);
+    gameBoard.Init(boardState);
 
     // If we find a solution to the game, put the results in
     // solution
