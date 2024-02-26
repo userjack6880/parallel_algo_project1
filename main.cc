@@ -154,6 +154,7 @@ void server(int argc, char *argv[], int numProcessors) {
           int indexBuf[packetSize];
           string stringBuf[packetSize];
 
+          // get data for the packet size
           for (int j = 0; j < packetSize; j++) {
             input >> stringBuf[j];
 
@@ -161,19 +162,27 @@ void server(int argc, char *argv[], int numProcessors) {
               cerr << "something wrong in input file format!" << endl;
               MPI_Abort(MPI_COMM_WORLD, -1);
             }
-          }
 
+            indexBuf[j] = gameIndex + j;
+            inputStrings[indexBuf[j]] = stringBuf[j];
+          }
           // package into character array
           char* buf;
           packageGames(&buf, stringBuf, packetSize);
           int dataSize = strlen(buf);
 
-          MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
-          MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 0, MPI_COMM_WORLD);
+          // send it
+          // MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+          // MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 0, MPI_COMM_WORLD);
+
+          // increase the game index;
+          gameIndex + packetSize;
         }
         firstRun = 0;
       }
     }
+
+    cout << "Processed " << gameIndex + 1 << " games." << endl;
   }
   // Report how cases had a solution.
   cout << "found " << count << " solutions" << endl ;
@@ -181,7 +190,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
 // Put the code for the client here
 void client(int myID) {
-  cout << "hi, I'm client " << myID << endl;
+  cout << "hi, I'm client " << myID << " and I'm hungry for data" << endl;
 }
 
 
