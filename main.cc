@@ -218,6 +218,11 @@ void client(int myID) {
 
   // process the data
   for (int i = 0; i < packetSize; i++) {
+    unsigned char boardState[IDIM*JDIM];
+    for (int j = 0; j < IDIM*JDIM; j++) {
+      boardState[j] = boardStates[i][j];
+    }
+
     // initialize the game
     game_state gameBoard;
     gameBoard.Init(boardStates[i]);
