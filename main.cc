@@ -136,16 +136,26 @@ void server(int argc, char *argv[], int numProcessors) {
       packetSize = 1;
     }
 
-    // ask all of the clients if they are ready
-    cout << "asking the clients if they're ready" << endl;
-    int msgBuf = 1;
-    MPI_Bcast(&msgBuf, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    // run through the input
+    int currentClient = 1;
+    while (gameIndex + packetSize < numGames) {
+      // check if client is ready
+      cout << "asking client " << currentClient << " if they are ready" << endl;
+      int msgBuf = 1; // message 1 is "ready?" - response should match if true, 0 if not
+      MPI_Request request;
+      MPI_Isend(&msgBuf, 1, MPI_INT, currentClient, 1, MPI_COMM_WORLD, &request);
+      msgBuf = 0;
+      MPI_Test(&request, &msgBuf, MPI_STATUS_IGNORE);
 
-    // now wait for respones
-    cout << "waiting for clients to respond" << endl;
+      // if client is not ready, then we move onto the next one
+      if (!msgBuf) {
+        currentClient++;
+        if (currentClient > numProcessors) {
+          currentClient = 1;
+        }
+        continue;
+      }
 
-    // get the first set of packets to distribute
-    for (int i = 1; i < numProcessors; i++) {
       // get a number of games based on packetSize
       string inputStrings[packetSize];
       for (int j = 0; j < packetSize; j++) {
@@ -157,7 +167,7 @@ void server(int argc, char *argv[], int numProcessors) {
         }
       }
 
-      // collapse it into a single charater array
+      // package it into a single charater array
       char* buf;
       packageGames(&buf, inputStrings, packetSize);
     }
@@ -171,8 +181,7 @@ void client(int myID) {
   cout << "hi, I'm client " << myID << endl;
   // wait for ready query from server
   int msgBuf = 1;
-  MPI_Status status;
-  MPI_Recv(&msgBuf, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+  MPI_Recv(&msgBuf, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
   if (msgBuf == 1) {
     cout << "client " << myID << ": recieved a ready query from server" << endl;
@@ -181,8 +190,6 @@ void client(int myID) {
     cerr << "client " << myID << ": recieved malformed query from server" << endl;
     MPI_Abort(MPI_COMM_WORLD,-1);
   }
-
-  int tag = status.MPI_TAG;
   
   // send ready message to server
 }
