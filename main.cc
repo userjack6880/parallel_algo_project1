@@ -174,6 +174,7 @@ void server(int argc, char *argv[], int numProcessors) {
           int dataSize = strlen(buf);
 
           // send it
+          cout << "sending to client " << i + 1 << "'" << stringBuf[0] << "'" << endl;
           MPI_Send(&packetSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
           MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
           MPI_Send(&dataSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
@@ -210,6 +211,8 @@ void client(int myID) {
   MPI_Recv(buf, dataSize, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
   cout << "client " << myID << ": packetSize - " << packetSize << ", dataSize - " << dataSize << endl;
+
+  cout << "client " << myID << ": "
 
   for (int i = 0; i < dataSize; i++) {
     cout << buf[i];
