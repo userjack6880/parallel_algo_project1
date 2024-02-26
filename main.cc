@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <unistd>
 
 // C++ stadard library using statements
 using std::cout;
@@ -225,7 +226,7 @@ void client(int myID) {
     // die if packet size is 0
     if (packetSize == 0) {
       cout << "client " << myID << ": I've been told to quit" << endl;
-      sleep 10;
+      usleep(10000000);
       MPI_Finalize();
     }
     cout << "client " << myID << ": I got data" << endl;
