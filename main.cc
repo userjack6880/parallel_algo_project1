@@ -206,6 +206,8 @@ void client(int myID) {
   MPI_Recv(&dataSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   char* buf = new char[dataSize];
   MPI_Recv(buf, dataSize, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+  cout << "client " << myID << ": packetSize - " << packetSize << ", dataSize - " << dataSize << endl;
 }
 
 
