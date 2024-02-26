@@ -208,14 +208,14 @@ void server(int argc, char *argv[], int numProcessors) {
           }
 
           // send data back to the client
-          sendData(packetSize, input, &gameIndex, inputStrings, source);
+          sendData(packetSize, input, gameIndex, inputStrings, source);
         }
       }
       else {
         // get the data and send two packets to each client - an array of game indexes
         // and gameboards
         for (int i = 0; i < numProcessors; i++) {
-          sendData(packetSize, input, &gameIndex, inputStrings, i + 1);
+          sendData(packetSize, input, gameIndex, inputStrings, i + 1);
         }
         firstRun = 0;
       }
