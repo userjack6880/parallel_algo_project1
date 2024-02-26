@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cstring>
 
 // C++ stadard library using statements
 using std::cout;
