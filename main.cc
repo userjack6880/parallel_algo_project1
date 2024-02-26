@@ -172,9 +172,9 @@ void server(int argc, char *argv[], int numProcessors) {
           int dataSize = strlen(buf);
 
           // send it
-          MPI_Send(packetSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(&packetSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
           MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
-          MPI_Send(dataSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(&dataSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
           MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 0, MPI_COMM_WORLD);
 
           // increase the game index;
