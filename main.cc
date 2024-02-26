@@ -155,7 +155,7 @@ void server(int argc, char *argv[], int numProcessors) {
           string stringBuf[packetSize];
 
           for (int j = 0; j < packetSize; j++) {
-            input >> stringBuf;
+            input >> stringBuf[j];
 
             if (stringBuf[j].size() != IDIM*JDIM) {
               cerr << "something wrong in input file format!" << endl;
