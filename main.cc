@@ -226,12 +226,12 @@ void server(int argc, char *argv[], int numProcessors) {
           }
 
           // if we're waiting on a client, we have too much for them to do
-          if (packetSize > 1) {
-            if (packetSize > maxPacket) {
-              maxPacket = packetSize;
-            }
-            packetSize--;
-          }
+          // if (packetSize > 1) {
+          //   if (packetSize > maxPacket) {
+          //     maxPacket = packetSize;
+          //   }
+          //   packetSize--;
+          // }
 
           // now wait
           MPI_Wait(&request, &status);
