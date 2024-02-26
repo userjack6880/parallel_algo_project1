@@ -148,12 +148,12 @@ void server(int argc, char *argv[], int numProcessors) {
         int indexBuf[recvPacket];
         int solutionBuf[recvPacket];
 
-        MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &recquest);
+        MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
         MPI_Test(&request, &flag, MPI_STATUS_IGNORE);
         // if there's something, let's get the rest of the data
         if (flag) {
-          cout << "recieved data from client " << source << endl;
           int source = status.MPI_SOURCE;
+          cout << "recieved data from client " << source << endl;
           MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
           MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
