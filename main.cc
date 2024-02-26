@@ -212,43 +212,33 @@ void client(int myID) {
 
   // unpackage the data
   string boardStates[packetSize];
-
   for (int i = 0; i < packetSize; i++) {
     boardStates[i].assign(buf + (boardSize*i), boardSize);
-
-    cout << "client " << myID << ": " << boardStates[i] << endl;
   }
 
   // process the data
-  // for (int i = 0; i < packetSize; i++) {
-  //   // initialize the game
-  //   game_state gameBoard;
-  //   gameBoard.Init(buf);
+  for (int i = 0; i < packetSize; i++) {
+    // initialize the game
+    game_state gameBoard;
+    gameBoard.Init(boardStates[i]);
 
-  //   // If we find a solution to the game, put the results in
-  //   // solution
-  //   move solution[IDIM*JDIM];
-  //   int size = 0;
+    // If we find a solution to the game, put the results in
+    // solution
+    move solution[IDIM*JDIM];
+    int size = 0;
 
-  //   // Search for a solution to the puzzle
-  //   bool found = depthFirstSearch(gameBoard, size, solution);
+    // Search for a solution to the puzzle
+    bool found = depthFirstSearch(gameBoard, size, solution);
 
-  //   // If the solution is found we want to output how to solve the puzzle
-  //   // in the results file.
-  //   if (found) {
-  //     output << "found solution = " << endl;
-  //     game_state s;
-  //     s.Init(buf);
-  //     s.Print(output);
-  //     for (int i = 0; i < size; i++) {
-  //       s.makeMove(solution[i]);
-  //       output << "-->" << endl; 
-  //       s.Print(output);
-  //     }
-  //     output << "solved" << endl;
-  //     count++;
-  //   }
-  // }
+    // If the solution is found we want to output how to solve the puzzle
+    // in the results file.
+    if (found) {
+      cout << "client " << myID << ": " << boardStates[i] << ": solution exists" << endl;
+    }
+    else {
+      cout << "client " << myID << ": " << boardStates[i] << ": no solutiuon" << endl;
+    }
+  }
 }
 
 int main(int argc, char *argv[]) {
