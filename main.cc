@@ -127,6 +127,8 @@ void server(int argc, char *argv[], int numProcessors) {
   else {
     // get data and package into a packet
     int gameIndex = 0;
+    int solutions[numGames] = {0};
+    string inputStrings[numGames];
 
     // quick sanity check to see if breaking the probem up is worth doing
     if (numProcessors * packetSize > numGames) {
@@ -143,26 +145,33 @@ void server(int argc, char *argv[], int numProcessors) {
         break;
       }
       else {
+        // get the data and send two packets to each client - an array of game indexes
+        // and gameboards
         for (int i = 0; i < numProcessors; i++) {
           cout << "allocating initial data for client " << i + 1 << endl;
+
+          // initialize data for MPI
+          int indexBuf[packetSize];
+          string stringBuf[packetSize];
+
+          for (int j = 0; j < packetSize; j++) {
+            input >> stringBuf;
+
+            if (stringBuf[j].size() != IDIM*JDIM) {
+              cerr << "something wrong in input file format!" << endl;
+              MPI_ABORT(MPI_COMM_WORLD, -1);
+            }
+          }
+
+          // package into character array
+          char* buf;
+          packageGames(&buf, stringBuf, packetSize);
+
+          MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(stringBuf, strlen(stringBuf), MPI_CHAR, i + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
         firstRun = 0;
       }
-
-      // // get a number of games based on packetSize
-      // string inputStrings[packetSize];
-      // for (int j = 0; j < packetSize; j++) {
-      //   input >> inputStrings[j];
-
-      //   if (inputStrings[j].size() != IDIM*JDIM) {
-      //     cerr << "something wrong in input file format!" << endl;
-      //     MPI_Abort(MPI_COMM_WORLD,-1);
-      //   }
-      // }
-
-      // // package it into a single charater array
-      // char* buf;
-      // packageGames(&buf, inputStrings, packetSize);
     }
   }
   // Report how cases had a solution.
