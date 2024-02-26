@@ -147,10 +147,9 @@ void server(int argc, char *argv[], int numProcessors) {
         int recvPacket;
 
         MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
-        MPI_Test(&request, &flag, MPI_STATUS_IGNORE);
+        MPI_Test(&request, &flag, &status);
         // if there's something, let's get the rest of the data
         if (flag) {
-          MPI_Wait(&request, &status);
           int indexBuf[recvPacket];
           int solutionBuf[recvPacket];
           int source = status.MPI_SOURCE;
