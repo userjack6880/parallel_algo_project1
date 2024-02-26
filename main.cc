@@ -21,7 +21,7 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
-void packageGames(char* buf, string input, int packetSize) {
+void packageGames(char* buf, string input[], int packetSize) {
   // calculate length of the full packet
   size_t inputLength = 0;
   for (int i = 0; i < packetSize; i++) {
