@@ -156,20 +156,25 @@ void server(int argc, char *argv[], int numProcessors) {
         continue;
       }
 
-      // get a number of games based on packetSize
-      string inputStrings[packetSize];
-      for (int j = 0; j < packetSize; j++) {
-        input >> inputStrings[j];
+      // // get a number of games based on packetSize
+      // string inputStrings[packetSize];
+      // for (int j = 0; j < packetSize; j++) {
+      //   input >> inputStrings[j];
 
-        if (inputStrings[j].size() != IDIM*JDIM) {
-          cerr << "something wrong in input file format!" << endl;
-          MPI_Abort(MPI_COMM_WORLD,-1);
-        }
+      //   if (inputStrings[j].size() != IDIM*JDIM) {
+      //     cerr << "something wrong in input file format!" << endl;
+      //     MPI_Abort(MPI_COMM_WORLD,-1);
+      //   }
+      // }
+
+      // // package it into a single charater array
+      // char* buf;
+      // packageGames(&buf, inputStrings, packetSize);
+
+      currentClient++;
+      if (currentClient > numProcessors) {
+        currentClient = 1;
       }
-
-      // package it into a single charater array
-      char* buf;
-      packageGames(&buf, inputStrings, packetSize);
     }
   }
   // Report how cases had a solution.
