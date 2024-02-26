@@ -164,6 +164,12 @@ void server(int argc, char *argv[], int numProcessors) {
           // increase the game index
           gameIndex += packetSize;
         }
+
+        firstRun++;
+
+        if (firstRun > numGames) {
+          break;
+        }
       }
       else {
         // get the data and send two packets to each client - an array of game indexes
