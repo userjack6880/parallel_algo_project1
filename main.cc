@@ -138,7 +138,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
     // run through the input
     int firstRun = 1;
-    int iteration = 1;
+    int iteration = 0;
     while (gameIndex + packetSize < numGames) {
       // check to see if any clients have data for us, if it's not the first round
       if (!firstRun) {
