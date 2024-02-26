@@ -217,6 +217,8 @@ void client(int myID) {
   }
 
   // process the data
+  int solutions[packetSize] = {0};
+
   for (int i = 0; i < packetSize; i++) {
     unsigned char boardState[IDIM*JDIM];
     for (int j = 0; j < IDIM*JDIM; j++) {
@@ -227,23 +229,27 @@ void client(int myID) {
     game_state gameBoard;
     gameBoard.Init(boardState);
 
-    // If we find a solution to the game, put the results in
-    // solution
+    // Search for a solution to the puzzle
     move solution[IDIM*JDIM];
     int size = 0;
-
-    // Search for a solution to the puzzle
     bool found = depthFirstSearch(gameBoard, size, solution);
 
-    // If the solution is found we want to output how to solve the puzzle
-    // in the results file.
+    // If a solution is found, mark it
     if (found) {
-      cout << "client " << myID << ": " << boardStates[i] << ": solution exists" << endl;
+      solutions[i] = 1;
     }
     else {
-      cout << "client " << myID << ": " << boardStates[i] << ": no solutiuon" << endl;
+      solutions[i] = 0;
     }
   }
+
+  // send what we found back to the server
+  MPI_Send(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
+  MPI_Send(&bufIndex, packetSize, MPI_INT, 0, 0, MPI_COMM_WORLD);
+  MPI_Send(&solutions, packetSize, MPI_INT, 0, 0, MPI_COMM_WORLD);
+
+  // cleanup memory
+  delte[] buf;
 }
 
 int main(int argc, char *argv[]) {
