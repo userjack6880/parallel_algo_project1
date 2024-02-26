@@ -88,7 +88,7 @@ void server(int argc, char *argv[], int numProcessors) {
   }
 
   // output number of processors specified
-  cout << "running on " << numProcessors << " processors" << endl;
+  cout << "running on " << numProcessors << " child processors" << endl;
 
   // Input case filename 
   ifstream input(argv[1],ios::in);
@@ -262,35 +262,36 @@ void server(int argc, char *argv[], int numProcessors) {
         continue;
       }
       else {
+        // initialize the game board
+        unsigned char buf[IDIM*JDIM];
+        for (int j = 0; j < IDIM*JDIM; j++) {
+          buf[j] = inputStrings[j];
+        }
+
+        game_state gameBoard;
+        gameBoard.Init(buf);
+
+        // solutions
+        move solution[IDIM*JDIM];
+        int size = 0;
+
+        // we're only working on boards with found solutions, so we can just run
+        // the search function
+        depthFirstSearch(gameBoard, size, solution);
+
+        // now output to file
+        output << "found solution = " << endl;
+        gameBoard.Init(buf);
+        gameBoard.Print(output);
+        for (int j = 0; j < size; j++) {
+          gameBoard.makeMove(solution[j]);
+          output << "-->" << endl;
+          gameBoard.Print(output);
+        }
+        output << "solved" << endl;
+
         count++;
       }
-      // // initialize the game
-      // game_state gameBoard;
-      // gameBoard.Init(buf);
-
-      // // If we find a solution to the game, put the results in
-      // // solution
-      // move solution[IDIM*JDIM];
-      // int size = 0;
-
-      // // Search for a solution to the puzzle
-      // bool found = depthFirstSearch(gameBoard, size, solution);
-
-      // // If the solution is found we want to output how to solve the puzzle
-      // // in the results file.
-      // if (found) {
-      //   output << "found solution = " << endl;
-      //   game_state s;
-      //   s.Init(buf);
-      //   s.Print(output);
-      //   for (int i = 0; i < size; i++) {
-      //     s.makeMove(solution[i]);
-      //     output << "-->" << endl; 
-      //     s.Print(output);
-      //   }
-      //   output << "solved" << endl;
-      //   count++;
-      // }
     }
 
     cout << "Processed " << gameIndex << " games with maximum packet size of " << maxPacket << "." << endl;
