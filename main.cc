@@ -148,11 +148,12 @@ void server(int argc, char *argv[], int numProcessors) {
 
         cout << "waiting for data from clients" << endl;
         MPI_Recv(&recvPacket, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
-        cout << "recieved data from client " << source << endl;
         // if there's something, let's get the rest of the data
         int indexBuf[recvPacket];
         int solutionBuf[recvPacket];
         int source = status.MPI_SOURCE;
+
+        cout << "recieved data from client " << source << endl;
         MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
