@@ -152,6 +152,8 @@ void server(int argc, char *argv[], int numProcessors) {
         MPI_Test(&request, &flag, MPI_STATUS_IGNORE);
         // if there's something, let's get the rest of the data
         if (flag) {
+          MPI_Wait(&request, &status);
+          
           int source = status.MPI_SOURCE;
           cout << "recieved data from client " << source << endl;
           MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
