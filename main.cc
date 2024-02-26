@@ -157,6 +157,7 @@ void server(int argc, char *argv[], int numProcessors) {
         }
         else {
           // if there's already a request ready, then there's not enough for the clients to do
+          cout << "increasing packet size" << endl;
           packetSize++;
         }
 
