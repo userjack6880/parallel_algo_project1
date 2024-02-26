@@ -136,6 +136,14 @@ void server(int argc, char *argv[], int numProcessors) {
       packetSize = 1;
     }
 
+    // ask all of the clients if they are ready
+    cout << "asking the clients if they're ready" << endl;
+    int msgBuf = 1;
+    MPI_Bcast(&msgBuf, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    // now wait for respones
+    cout << "waiting for clients to respond" << endl;
+
     // get the first set of packets to distribute
     for (int i = 1; i < numProcessors; i++) {
       // get a number of games based on packetSize
@@ -152,11 +160,6 @@ void server(int argc, char *argv[], int numProcessors) {
       // collapse it into a single charater array
       char* buf;
       packageGames(&buf, inputStrings, packetSize);
-
-      // ask all of the clients if they are ready
-      cout << "asking the clients if they're ready" << endl;
-      int msgBuf = 1;
-      MPI_Bcast(&msgBuf, 1, MPI_INT, 0, MPI_COMM_WORLD);
     }
   }
   // Report how cases had a solution.
