@@ -63,7 +63,7 @@ void server(int argc, char *argv[], int numProcessors) {
   
   int count = 0;
   int numGames = 0;
-  int packetSize = 5; // some arbitrary number to start with
+  int packetSize = 1;
 
   // get the number of games from the input file
   input >> numGames;
@@ -129,13 +129,6 @@ void server(int argc, char *argv[], int numProcessors) {
     int solutions[numGames] = {0};
     string inputStrings[numGames];
 
-    // quick sanity check to see if breaking the probem up is worth doing
-    if (numProcessors * packetSize > numGames) {
-      // output warning and reduce packetSize to 1
-      cout << "There are less games than initial problem breakdown. Reducing packet size to 1!" << endl;
-      packetSize = 1;
-    }
-
     // run through the input
     int firstRun = 1;
     int fast = 0;
@@ -160,7 +153,7 @@ void server(int argc, char *argv[], int numProcessors) {
           fast++;
           if (fast == numProcessors) {
             packetSize++;
-            cout << "packet size increased to" << packetSize << endl;
+            cout << "packet size increased to " << packetSize << endl;
           }
         }
 
@@ -170,7 +163,6 @@ void server(int argc, char *argv[], int numProcessors) {
           int solutionBuf[recvPacket];
           int source = status.MPI_SOURCE;
 
-          cout << "recieved data from client " << source << endl;
           MPI_Recv(&bufIndex, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
           MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
@@ -180,8 +172,6 @@ void server(int argc, char *argv[], int numProcessors) {
           }
 
           // send data back to the client
-          cout << "allocating initial data for client " << source << endl;
-
           // initialize data for MPI
           int indexBuf[packetSize];
           string stringBuf[packetSize];
@@ -208,7 +198,6 @@ void server(int argc, char *argv[], int numProcessors) {
           MPI_Send(indexBuf, packetSize, MPI_INT, source, 1, MPI_COMM_WORLD);
           MPI_Send(&dataSize, 1, MPI_INT, source, 2, MPI_COMM_WORLD);
           MPI_Send(buf, dataSize, MPI_CHAR, source, 3, MPI_COMM_WORLD);
-          cout << "data sent" << endl;
 
           // increase the game index
           gameIndex += packetSize;
@@ -218,8 +207,6 @@ void server(int argc, char *argv[], int numProcessors) {
         // get the data and send two packets to each client - an array of game indexes
         // and gameboards
         for (int i = 0; i < numProcessors; i++) {
-          cout << "allocating initial data for client " << i + 1 << endl;
-
           // initialize data for MPI
           int indexBuf[packetSize];
           string stringBuf[packetSize];
@@ -246,7 +233,6 @@ void server(int argc, char *argv[], int numProcessors) {
           MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 1, MPI_COMM_WORLD);
           MPI_Send(&dataSize, 1, MPI_INT, i + 1, 2, MPI_COMM_WORLD);
           MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 3, MPI_COMM_WORLD);
-          cout << "data sent" << endl;
 
           // increase the game index
           gameIndex += packetSize;
@@ -271,7 +257,6 @@ void server(int argc, char *argv[], int numProcessors) {
       int bufIndex[recvPacket];
       int solutionBuf[recvPacket];
 
-      cout << "recieved data from client " << i + 1 << endl;
       MPI_Recv(&bufIndex, recvPacket, MPI_INT, i + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Recv(&solutionBuf, recvPacket, MPI_INT, i + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
