@@ -176,7 +176,7 @@ void server(int argc, char *argv[], int numProcessors) {
           // MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 0, MPI_COMM_WORLD);
 
           // increase the game index;
-          gameIndex + packetSize;
+          gameIndex += packetSize;
         }
         firstRun = 0;
       }
