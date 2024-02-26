@@ -24,7 +24,6 @@ using std::ios;
 
 void packageGames(char** buf, string input[], int packetSize) {
   // calculate length of the full packet
-  cout << "calculating length: ";
   size_t inputLength = 0;
   for (int i = 0; i < packetSize; i++) {
     inputLength += input[i].length() + 1;
@@ -32,7 +31,6 @@ void packageGames(char** buf, string input[], int packetSize) {
   cout << inputLength << endl;
 
   // allocate memory
-  cout << "allocating memory!" << endl;
   *buf = new char[inputLength];
   if (*buf == nullptr) {
     cerr << "failed to allocate memory!" << endl;
@@ -141,7 +139,6 @@ void server(int argc, char *argv[], int numProcessors) {
 
     // get the first set of packets to distribute
     for (int i = 1; i < numProcessors; i++) {
-      cout << "working on processor " << i << endl;
       // get a number of games based on packetSize
       string inputStrings[packetSize];
       for (int j = 0; j < packetSize; j++) {
@@ -155,17 +152,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
       // collapse it into a single charater array
       char* buf;
-      cout << "packaging!" << endl;
       packageGames(&buf, inputStrings, packetSize);
-      cout << "packaged!" << endl;
-
-      cout << inputStrings[0] << " ";
-
-      for (int j = 0; j < 25; j++) {
-        cout << buf[j];
-      }
-
-      cout << endl;
     }
   }
   // Report how cases had a solution.
@@ -197,7 +184,8 @@ int main(int argc, char *argv[]) {
   if (myId == 0) {
     // Processor 0 runs the server code
     get_timer(); // zero the timer
-    server(argc, argv, numProcessors);
+    server(argc, argv, numProcessors-1); // the number of processors
+                                         // excludes the server
 
     // Measure the running time of the server
     cout << "execution time = " << get_timer() << " seconds." << endl;
