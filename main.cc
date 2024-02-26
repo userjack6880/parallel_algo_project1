@@ -205,7 +205,7 @@ void server(int argc, char *argv[], int numProcessors) {
             }
 
             // initialize game board
-            game_board gameBoard;
+            game_state gameBoard;
             gameBoard.Init(buf);
 
             move solution[IDIM*JDIM];
