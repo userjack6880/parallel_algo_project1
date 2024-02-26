@@ -155,6 +155,10 @@ void server(int argc, char *argv[], int numProcessors) {
           MPI_Wait(&request, &status);
           flag = 1;
         }
+        else {
+          // if there's already a request ready, then there's not enough for the clients to do
+          packetSize++;
+        }
 
         // if there's something, let's get the rest of the data
         if (flag) {
