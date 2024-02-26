@@ -22,7 +22,7 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
-void packageGames(char* buf, string input[], int packetSize) {
+void packageGames(char** buf, string input[], int packetSize) {
   // calculate length of the full packet
   cout << "calculating length: ";
   size_t inputLength = 0;
@@ -33,7 +33,7 @@ void packageGames(char* buf, string input[], int packetSize) {
 
   // allocate memory
   cout << "allocating memory!" << endl;
-  buf = new char[inputLength];
+  *buf = new char[inputLength];
   if (buf == nullptr) {
     cerr << "failed to allocate memory!" << endl;
     MPI_Abort(MPI_COMM_WORLD,-1);
@@ -156,7 +156,7 @@ void server(int argc, char *argv[], int numProcessors) {
       // collapse it into a single charater array
       char* buf;
       cout << "packaging!" << endl;
-      packageGames(buf, inputStrings, packetSize);
+      packageGames(&buf, inputStrings, packetSize);
 
       cout << inputStrings[1] << " " << buf[i] << endl;
     }
