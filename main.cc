@@ -166,21 +166,21 @@ void server(int argc, char *argv[], int numProcessors) {
 
         // if there's something, let's get the rest of the data
         if (flag) {
-          int indexBuf[recvPacket];
+          int bufIndex[recvPacket];
           int solutionBuf[recvPacket];
           int source = status.MPI_SOURCE;
 
           cout << "recieved data from client " << source << endl;
-          MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          MPI_Recv(&bufIndex, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
           MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
           // put record the solution states
           for (int i = 0; i < recvPacket; i++) {
-            solutions[indexBuf[i]] = solutionBuf[i];
+            solutions[bufIndex[i]] = solutionBuf[i];
           }
 
           // send data back to the client
-          cout << "allocating initial data for client " << i + 1 << endl;
+          cout << "allocating initial data for client " << source << endl;
 
           // initialize data for MPI
           int indexBuf[packetSize];
@@ -268,11 +268,12 @@ void server(int argc, char *argv[], int numProcessors) {
       MPI_Recv(&recvPacket, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
  
       // if there's something, let's get the rest of the data
-      int nullBuf[recvPacket];
+      int bufIndex[recvPacket];
+      int solutionBuf[recvPacket];
 
       cout << "recieved data from client " << i + 1 << endl;
-      MPI_Recv(&nullBuf, recvPacket, MPI_INT, i + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      MPI_Recv(&nullBuf, recvPacket, MPI_INT, i + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      MPI_Recv(&bufIndex, recvPacket, MPI_INT, i + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      MPI_Recv(&solutionBuf, recvPacket, MPI_INT, i + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
       // put record the solution states
       for (int i = 0; i < recvPacket; i++) {
@@ -281,7 +282,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
       // kill the child
       int kill = 0;
-      MPI_SEND(&kill, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+      MPI_Send(&kill, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
     }
 
     // run over the data
