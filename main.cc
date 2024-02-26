@@ -44,6 +44,41 @@ void packageGames(char** buf, string input[], int packetSize) {
   }
 }
 
+void sendData(int packetSize, iostream input, int &gameIndex, vector<string>& inputStrings, dest) {
+  // initialize data for MPI
+  int indexBuf[packetSize];
+  string stringBuf[packetSize];
+
+  // get data for the packet size
+  for (int i = 0; i < packetSize; i++) {
+    input >> stringBuf[i];
+
+    if (stringBuf[i].size() != IDIM*JDIM) {
+      cerr << "something wrong in input file format!" << endl;
+      MPI_Abort(MPI_COMM_WORLD, -1);
+    }
+
+    indexBuf[i] = gameIndex + i;
+    inputStrings[indexBuf[i]] = stringBuf[i];
+  }
+  // package into character array
+  char* buf;
+  packageGames(&buf, stringBuf, packetSize);
+  int dataSize = strlen(buf);
+
+  // send it
+  MPI_Send(&packetSize, 1, MPI_INT, source, 0, MPI_COMM_WORLD);
+  MPI_Send(indexBuf, packetSize, MPI_INT, source, 1, MPI_COMM_WORLD);
+  MPI_Send(&dataSize, 1, MPI_INT, source, 2, MPI_COMM_WORLD);
+  MPI_Send(buf, dataSize, MPI_CHAR, source, 3, MPI_COMM_WORLD);
+
+  // increase the game index
+  gameIndex += packetSize;
+
+  // cleanup
+  delete[] buf;
+}
+
 void server(int argc, char *argv[], int numProcessors) {
 
   // Check to make sure the server can run
@@ -127,7 +162,7 @@ void server(int argc, char *argv[], int numProcessors) {
     // get data and package into a packet
     int gameIndex = 0;
     int solutions[numGames] = {0};
-    string inputStrings[numGames];
+    vector<string> inputStrings(numGames);
 
     // run through the input
     int firstRun = 1;
@@ -173,73 +208,14 @@ void server(int argc, char *argv[], int numProcessors) {
           }
 
           // send data back to the client
-          // initialize data for MPI
-          int indexBuf[packetSize];
-          string stringBuf[packetSize];
-
-          // get data for the packet size
-          for (int i = 0; i < packetSize; i++) {
-            input >> stringBuf[i];
-
-            if (stringBuf[i].size() != IDIM*JDIM) {
-              cerr << "something wrong in input file format!" << endl;
-              MPI_Abort(MPI_COMM_WORLD, -1);
-            }
-
-            indexBuf[i] = gameIndex + i;
-            inputStrings[indexBuf[i]] = stringBuf[i];
-          }
-          // package into character array
-          char* buf;
-          packageGames(&buf, stringBuf, packetSize);
-          int dataSize = strlen(buf);
-
-          // send it
-          MPI_Send(&packetSize, 1, MPI_INT, source, 0, MPI_COMM_WORLD);
-          MPI_Send(indexBuf, packetSize, MPI_INT, source, 1, MPI_COMM_WORLD);
-          MPI_Send(&dataSize, 1, MPI_INT, source, 2, MPI_COMM_WORLD);
-          MPI_Send(buf, dataSize, MPI_CHAR, source, 3, MPI_COMM_WORLD);
-
-          // increase the game index
-          gameIndex += packetSize;
+          sendData(packetSize, input, &gameIndex, inputStrings, source);
         }
       }
       else {
         // get the data and send two packets to each client - an array of game indexes
         // and gameboards
         for (int i = 0; i < numProcessors; i++) {
-          // initialize data for MPI
-          int indexBuf[packetSize];
-          string stringBuf[packetSize];
-
-          // get data for the packet size
-          for (int j = 0; j < packetSize; j++) {
-            input >> stringBuf[j];
-
-            if (stringBuf[j].size() != IDIM*JDIM) {
-              cerr << "something wrong in input file format!" << endl;
-              MPI_Abort(MPI_COMM_WORLD, -1);
-            }
-
-            indexBuf[j] = gameIndex + j;
-            inputStrings[indexBuf[j]] = stringBuf[j];
-          }
-          // package into character array
-          char* buf;
-          packageGames(&buf, stringBuf, packetSize);
-          int dataSize = strlen(buf);
-
-          // send it
-          MPI_Send(&packetSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
-          MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 1, MPI_COMM_WORLD);
-          MPI_Send(&dataSize, 1, MPI_INT, i + 1, 2, MPI_COMM_WORLD);
-          MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 3, MPI_COMM_WORLD);
-
-          // increase the game index
-          gameIndex += packetSize;
-
-          // cleanup memory
-          delete[] buf;
+          sendData(packetSize, input, &gameIndex, inputStrings, i + 1);
         }
         firstRun = 0;
       }
