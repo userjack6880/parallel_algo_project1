@@ -44,40 +44,6 @@ void packageGames(char** buf, string input[], int packetSize) {
   }
 }
 
-void sendData(ifstream input, int dest, int gameIndex, int packetSize) {
-  cout << "allocating initial data for client " << dest << endl;
-
-  // initialize data for MPI
-  int indexBuf[packetSize];
-  string stringBuf[packetSize];
-
-  // get data for the packet size
-  for (int i = 0; i < packetSize; i++) {
-    input >> stringBuf[i];
-
-    if (stringBuf[i].size() != IDIM*JDIM) {
-      cerr << "something wrong in input file format!" << endl;
-      MPI_Abort(MPI_COMM_WORLD, -1);
-    }
-
-    indexBuf[i] = gameIndex + i;
-    inputStrings[indexBuf[i]] = stringBuf[i];
-  }
-  // package into character array
-  char* buf;
-  packageGames(&buf, stringBuf, packetSize);
-  int dataSize = strlen(buf);
-
-  // send it
-  MPI_Send(&packetSize, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
-  MPI_Send(indexBuf, packetSize, MPI_INT, dest, 1, MPI_COMM_WORLD);
-  MPI_Send(&dataSize, 1, MPI_INT, dest, 2, MPI_COMM_WORLD);
-  MPI_Send(buf, dataSize, MPI_CHAR, dest, 3, MPI_COMM_WORLD);
-  cout << "data sent" << endl;
-
-  delete[] buf;
-}
-
 void server(int argc, char *argv[], int numProcessors) {
 
   // Check to make sure the server can run
@@ -172,7 +138,6 @@ void server(int argc, char *argv[], int numProcessors) {
 
     // run through the input
     int firstRun = 1;
-    int iteration = 0;
     int fast = 0;
     while (gameIndex + packetSize < numGames) {
       // check to see if any clients have data for us, if it's not the first round
@@ -209,25 +174,79 @@ void server(int argc, char *argv[], int numProcessors) {
           MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
           MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-          int del = 0;
-          MPI_Send(&del, 1, MPI_INT, source, 0, MPI_COMM_WORLD);
-//          sendData(input, source, gameIndex, packetSize);
+          // put record the solution states
+          for (int i = 0; i < recvPacket; i++) {
+            solutions[indexBuf[i]] = solutionBuf[i];
+          }
+
+          // send data back to the client
+          cout << "allocating initial data for client " << i + 1 << endl;
+
+          // initialize data for MPI
+          int indexBuf[packetSize];
+          string stringBuf[packetSize];
+
+          // get data for the packet size
+          for (int i = 0; i < packetSize; i++) {
+            input >> stringBuf[i];
+
+            if (stringBuf[i].size() != IDIM*JDIM) {
+              cerr << "something wrong in input file format!" << endl;
+              MPI_Abort(MPI_COMM_WORLD, -1);
+            }
+
+            indexBuf[i] = gameIndex + i;
+            inputStrings[indexBuf[i]] = stringBuf[i];
+          }
+          // package into character array
+          char* buf;
+          packageGames(&buf, stringBuf, packetSize);
+          int dataSize = strlen(buf);
+
+          // send it
+          MPI_Send(&packetSize, 1, MPI_INT, source, 0, MPI_COMM_WORLD);
+          MPI_Send(indexBuf, packetSize, MPI_INT, source, 1, MPI_COMM_WORLD);
+          MPI_Send(&dataSize, 1, MPI_INT, source, 2, MPI_COMM_WORLD);
+          MPI_Send(buf, dataSize, MPI_CHAR, source, 3, MPI_COMM_WORLD);
+          cout << "data sent" << endl;
 
           // increase the game index
           gameIndex += packetSize;
-
-          iteration++;
-          if (iteration == numProcessors) {
-            break;
-          }
         }
       }
       else {
         // get the data and send two packets to each client - an array of game indexes
         // and gameboards
         for (int i = 0; i < numProcessors; i++) {
-          // send data
-          sendData(input, i + 1, gameIndex, packetSize);
+          cout << "allocating initial data for client " << i + 1 << endl;
+
+          // initialize data for MPI
+          int indexBuf[packetSize];
+          string stringBuf[packetSize];
+
+          // get data for the packet size
+          for (int j = 0; j < packetSize; j++) {
+            input >> stringBuf[j];
+
+            if (stringBuf[j].size() != IDIM*JDIM) {
+              cerr << "something wrong in input file format!" << endl;
+              MPI_Abort(MPI_COMM_WORLD, -1);
+            }
+
+            indexBuf[j] = gameIndex + j;
+            inputStrings[indexBuf[j]] = stringBuf[j];
+          }
+          // package into character array
+          char* buf;
+          packageGames(&buf, stringBuf, packetSize);
+          int dataSize = strlen(buf);
+
+          // send it
+          MPI_Send(&packetSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 1, MPI_COMM_WORLD);
+          MPI_Send(&dataSize, 1, MPI_INT, i + 1, 2, MPI_COMM_WORLD);
+          MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 3, MPI_COMM_WORLD);
+          cout << "data sent" << endl;
 
           // increase the game index
           gameIndex += packetSize;
@@ -237,6 +256,37 @@ void server(int argc, char *argv[], int numProcessors) {
         }
         firstRun = 0;
       }
+    }
+
+    // kill each child as they finish
+    for (int i = 0; i < numProcessors; i++) {
+      MPI_Request request;
+      int flag = 0;
+      int recvPacket;
+
+      // cout << "waiting for data from clients" << endl;
+      MPI_Recv(&recvPacket, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+ 
+      // if there's something, let's get the rest of the data
+      int nullBuf[recvPacket];
+
+      cout << "recieved data from client " << i + 1 << endl;
+      MPI_Recv(&nullBuf, recvPacket, MPI_INT, i + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      MPI_Recv(&nullBuf, recvPacket, MPI_INT, i + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+      // put record the solution states
+      for (int i = 0; i < recvPacket; i++) {
+        solutions[indexBuf[i]] = solutionBuf[i];
+      }
+
+      // kill the child
+      int kill = 0;
+      MPI_SEND(&kill, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+    }
+
+    // run over the data
+    for (int i = 0; i < gameIndex; i++) {
+      cout << "Problem " << i << ": " << inputStrings[i] << " Solution: " << solutions[i] << endl;
     }
 
     cout << "Processed " << gameIndex << " games." << endl;
