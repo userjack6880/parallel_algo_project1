@@ -146,13 +146,10 @@ void server(int argc, char *argv[], int numProcessors) {
         int flag;
         int recvPacket;
 
-        cout << "see if data is available" << endl;
         MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
-        cout << "MPI_Test" << endl;
         MPI_Test(&request, &flag, &status);
         // if there's something, let's get the rest of the data
         if (flag) {
-          cout << "Flag thrown" << endl;
           int indexBuf[recvPacket];
           int solutionBuf[recvPacket];
           int source = status.MPI_SOURCE;
@@ -228,6 +225,7 @@ void client(int myID) {
     // die if packet size is 0
     if (packetSize == 0) {
       cout << "client " << myID << ": I've been told to quit" << endl;
+      sleep 10;
       MPI_Finalize();
     }
     cout << "client " << myID << ": I got data" << endl;
