@@ -329,8 +329,6 @@ void server(int argc, char *argv[], int numProcessors) {
         output << "solved" << endl;
 
         count++;
-
-        delete[] buf;
       }
     }
 
