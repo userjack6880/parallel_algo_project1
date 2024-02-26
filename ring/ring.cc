@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 	       left_processor,tag,MPI_COMM_WORLD);
       MPI_Irecv(&recv_data[recv_loc],1,MPI_DOUBLE,
 	       right_processor,MPI_ANY_TAG,MPI_COMM_WORLD,&request) ;
-      MPI_Wait(&reqeust, &stat) ;
+      MPI_Wait(&request, &stat) ;
       cout << "processor " << my_id << " receiving msg " << recv_data[recv_loc]
 	   << endl ;
     } else {  // odd processor recv first
