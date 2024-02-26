@@ -148,6 +148,7 @@ void server(int argc, char *argv[], int numProcessors) {
         int indexBuf[recvPacket];
         int solutionBuf[recvPacket];
 
+        cout << "checking for data" << endl;
         MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
         MPI_Test(&request, &flag, MPI_STATUS_IGNORE);
         // if there's something, let's get the rest of the data
