@@ -277,7 +277,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
       // put record the solution states
       for (int i = 0; i < recvPacket; i++) {
-        solutions[indexBuf[i]] = solutionBuf[i];
+        solutions[bufIndex[i]] = solutionBuf[i];
       }
 
       // kill the child
