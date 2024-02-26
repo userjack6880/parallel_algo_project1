@@ -44,7 +44,7 @@ void packageGames(char** buf, string input[], int packetSize) {
   for (int i = 0; i < packetSize; i++) {
     strncpy(*buf + offset, input[i].c_str(), input[i].length());
     offset += input[i].length();
-    *buf[offset++] = '\0';
+    (*buf)[offset++] = '\0';
   }
 }
 
@@ -157,6 +157,7 @@ void server(int argc, char *argv[], int numProcessors) {
       char* buf;
       cout << "packaging!" << endl;
       packageGames(&buf, inputStrings, packetSize);
+      cout << "packaged!" << endl;
 
       cout << inputStrings[1] << " " << buf[i] << endl;
     }
