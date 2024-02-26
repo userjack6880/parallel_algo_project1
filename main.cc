@@ -166,7 +166,6 @@ void server(int argc, char *argv[], int numProcessors) {
 
     // run through the input
     int firstRun = 1;
-    int fast = 0;
     while (gameIndex + packetSize < numGames) {
       // check to see if any clients have data for us, if it's not the first round
       if (!firstRun) {
@@ -185,11 +184,7 @@ void server(int argc, char *argv[], int numProcessors) {
         }
         else {
           // if the clients are too fast, then there's not enough for the clients to do
-          fast++;
-          if (fast == numProcessors) {
-            packetSize++;
-            fast = 0;
-          }
+          packetSize++;
         }
 
         // if there's something, let's get the rest of the data
@@ -261,7 +256,6 @@ void client(int myID) {
 
     // die if packet size is 0
     if (packetSize == 0) {
-      cout << "client " << myID << ": I've been told to quit" << endl;
       break;
     }
     int bufIndex[packetSize];
