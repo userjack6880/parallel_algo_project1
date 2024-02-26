@@ -28,7 +28,6 @@ void packageGames(char** buf, string input[], int packetSize) {
   for (int i = 0; i < packetSize; i++) {
     inputLength += input[i].length() + 1;
   }
-  cout << inputLength << endl;
 
   // allocate memory
   *buf = new char[inputLength];
@@ -153,6 +152,11 @@ void server(int argc, char *argv[], int numProcessors) {
       // collapse it into a single charater array
       char* buf;
       packageGames(&buf, inputStrings, packetSize);
+
+      // ask all of the clients if they are ready
+      cout << "asking the clients if they're ready" << endl;
+      int msgBuf = 1;
+      MPI_Bcast(&msgBuf, 1, MPI_INT, 0, MPI_COMM_WORLD);
     }
   }
   // Report how cases had a solution.
@@ -160,7 +164,23 @@ void server(int argc, char *argv[], int numProcessors) {
 }
 
 // Put the code for the client here
-void client() {
+void client(int myID) {
+  // wait for ready query from server
+  int msgBuf = 1;
+  MPI_Status status;
+  MPI_Recv(&msgBuf, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+  if (msgBuf == 1) {
+    cout << "client " << myID << ": recieved a ready query from server" << endl;
+  }
+  else {
+    cerr << "client " << myID << ": recieved malformed query from server" << endl;
+    MPI_Abort(MPI_COMM_WORLD,-1);
+  }
+
+  int tag = status.MPI_TAG;
+  
+  // send ready message to server
 }
 
 
@@ -192,7 +212,7 @@ int main(int argc, char *argv[]) {
   } 
   else {
     // all other processors run the client code.
-    client();
+    client(myID);
   }
 
   // All MPI programs must call this before exiting
