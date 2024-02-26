@@ -151,6 +151,9 @@ void server(int argc, char *argv[], int numProcessors) {
         MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
         MPI_Test(&request, &flag, &status);
 
+        cout << "flag: " << flag << endl;
+        break;
+
         // if there's something, let's get the rest of the data
         if (flag) {
           int* indexBuf = new int[recvPacket];
