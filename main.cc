@@ -42,6 +42,7 @@ void packageGames(char** buf, string input[], int packetSize) {
     strncpy(*buf + offset, input[i].c_str(), input[i].length());
     offset += input[i].length();
     (*buf)[offset++] = '\0';
+    cout << "null added at offset " << offset << endl;
   }
 
   cout << "input length: " << inputLength << endl;
