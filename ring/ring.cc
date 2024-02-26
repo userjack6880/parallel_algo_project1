@@ -56,13 +56,15 @@ int main(int argc, char *argv[])
     // now use odd-even tie breaking to keep processors from both
     // sending to each other potentially causing deadlock
     MPI_Status stat ;
+    MPI_Request requeset ;
     int tag = 0 ;
     if(my_id%2 == 0) { // even processor send first
       cout << "sending from "<< my_id << " to "<< left_processor << endl ;
       MPI_Send(&recv_data[send_loc],1,MPI_DOUBLE,
 	       left_processor,tag,MPI_COMM_WORLD);
-      MPI_Recv(&recv_data[recv_loc],1,MPI_DOUBLE,
-	       right_processor,MPI_ANY_TAG,MPI_COMM_WORLD,&stat) ;
+      MPI_Irecv(&recv_data[recv_loc],1,MPI_DOUBLE,
+	       right_processor,MPI_ANY_TAG,MPI_COMM_WORLD,&request) ;
+      MPI_Wait(&reqeust, &stat) ;
       cout << "processor " << my_id << " receiving msg " << recv_data[recv_loc]
 	   << endl ;
     } else {  // odd processor recv first
