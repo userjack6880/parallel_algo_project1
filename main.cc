@@ -67,10 +67,10 @@ void sendData(int packetSize, iostream input, int &gameIndex, vector<string>& in
   int dataSize = strlen(buf);
 
   // send it
-  MPI_Send(&packetSize, 1, MPI_INT, source, 0, MPI_COMM_WORLD);
-  MPI_Send(indexBuf, packetSize, MPI_INT, source, 1, MPI_COMM_WORLD);
-  MPI_Send(&dataSize, 1, MPI_INT, source, 2, MPI_COMM_WORLD);
-  MPI_Send(buf, dataSize, MPI_CHAR, source, 3, MPI_COMM_WORLD);
+  MPI_Send(&packetSize, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
+  MPI_Send(indexBuf, packetSize, MPI_INT, dest, 1, MPI_COMM_WORLD);
+  MPI_Send(&dataSize, 1, MPI_INT, dest, 2, MPI_COMM_WORLD);
+  MPI_Send(buf, dataSize, MPI_CHAR, dest, 3, MPI_COMM_WORLD);
 
   // increase the game index
   gameIndex += packetSize;
