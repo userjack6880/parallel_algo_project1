@@ -172,17 +172,22 @@ void server(int argc, char *argv[], int numProcessors) {
           int dataSize = strlen(buf);
 
           // send it
-          // MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
-          // MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(packetSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(dataSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 0, MPI_COMM_WORLD);
 
           // increase the game index;
           gameIndex += packetSize;
+
+          // cleanup memory
+          delete[] buf;
         }
         firstRun = 0;
       }
     }
 
-    cout << "Processed " << gameIndex + 1 << " games." << endl;
+    cout << "Processed " << gameIndex << " games." << endl;
   }
   // Report how cases had a solution.
   cout << "found " << count << " solutions" << endl ;
@@ -191,6 +196,16 @@ void server(int argc, char *argv[], int numProcessors) {
 // Put the code for the client here
 void client(int myID) {
   cout << "hi, I'm client " << myID << " and I'm hungry for data" << endl;
+
+  // get data
+  int packetSize;
+  MPI_Recv(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  int bufIndex[packetSize];
+  MPI_Recv(&bufIndex, packetSize, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  int dataSize;
+  MPI_Recv(&dataSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+  char* buf = new char[dataSize];
+  MPI_Recv(buf, dataSize, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 }
 
 
