@@ -98,9 +98,8 @@ void server(int argc, char *argv[], int numProcessors) {
   
   int count = 0;
   int numGames = 0;
-  int packetSize = 1;
+  int packetSize = 10;
   int maxPacket = 1;
-  int packetMax = 25;
 
   // get the number of games from the input file
   input >> numGames;
@@ -228,6 +227,9 @@ void server(int argc, char *argv[], int numProcessors) {
 
           // if we're waiting on a client, we have too much for them to do
           if (packetSize > 1) {
+            if (packetSize > maxPacket) {
+              maxPacket = packetSize;
+            }
             packetSize--;
           }
 
@@ -237,9 +239,7 @@ void server(int argc, char *argv[], int numProcessors) {
         }
         else {
           // if the clients are too fast, then there's not enough for the clients to do
-//          if (packetSize < packetMax) {
-            packetSize++;
-//          }
+          packetSize++;
         }
 
         // reduce packet size to 1 if gameIndex + packetSize would not be valid
