@@ -154,6 +154,7 @@ void server(int argc, char *argv[], int numProcessors) {
           if (fast == numProcessors) {
             packetSize++;
             cout << "packet size increased to " << packetSize << endl;
+            fast = 0;
           }
         }
 
