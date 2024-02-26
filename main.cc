@@ -43,6 +43,8 @@ void packageGames(char** buf, string input[], int packetSize) {
     offset += input[i].length();
     (*buf)[offset++] = '\0';
   }
+
+  cout << "input length: " << inputLength << endl;
 }
 
 void server(int argc, char *argv[], int numProcessors) {
