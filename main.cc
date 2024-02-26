@@ -144,12 +144,17 @@ void server(int argc, char *argv[], int numProcessors) {
       if (!firstRun) {
         MPI_Request request;
         MPI_Status status;
-        int flag = 1;
+        int flag = 0;
         int recvPacket;
 
         // cout << "waiting for data from clients" << endl;
         MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
-        MPI_Wait(&request, &status);
+        MPI_Test(&request, &flag &status);
+
+        if (!flag) {
+          MPI_Wait(&request, &status);
+          flag = 1;
+        }
 
         // if there's something, let's get the rest of the data
         if (flag) {
