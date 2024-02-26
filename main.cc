@@ -98,7 +98,7 @@ void server(int argc, char *argv[], int numProcessors) {
   
   int count = 0;
   int numGames = 0;
-  int packetSize = 1;
+  int packetSize = 5; // arbitary number
 
   // get the number of games from the input file
   input >> numGames;
