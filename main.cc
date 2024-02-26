@@ -223,9 +223,6 @@ void server(int argc, char *argv[], int numProcessors) {
 
             // increment the index
             gameIndex++;
-
-            // cleanup
-            delete[] buf;
           }
 
           // now wait
