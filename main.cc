@@ -159,9 +159,9 @@ void server(int argc, char *argv[], int numProcessors) {
       packageGames(&buf, inputStrings, packetSize);
       cout << "packaged!" << endl;
 
-      cout << inputStrings[1] << " ";
+      cout << inputStrings[0] << " ";
 
-      for (int j = 0; j < 20; j++) {
+      for (int j = 0; j < 25; j++) {
         cout << buf[j];
       }
 
