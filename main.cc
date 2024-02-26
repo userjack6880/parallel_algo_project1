@@ -163,7 +163,8 @@ void server(int argc, char *argv[], int numProcessors) {
         // increase the game index
         gameIndex += packetSize;
 
-        if (iteration++ > 2) {
+        iteration++;
+        if (iteration > 2) {
           break;
         }
       }
