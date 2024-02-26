@@ -151,7 +151,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
       // collapse it into a single charater array
       char* buf;
-      packageGames(buf, inputStrings);
+      packageGames(buf, inputStrings, packetSize);
     }
   }
   // Report how cases had a solution.
