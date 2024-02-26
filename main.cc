@@ -153,8 +153,8 @@ void server(int argc, char *argv[], int numProcessors) {
 
         // if there's something, let's get the rest of the data
         if (flag) {
-          int indexBuf[recvPacket];
-          int solutionBuf[recvPacket];
+          int* indexBuf = new int[recvPacket];
+          int* solutionBuf = new int[recvPacket];
           int source = status.MPI_SOURCE;
 
           cout << "recieved data from client " << source << endl;
@@ -166,6 +166,10 @@ void server(int argc, char *argv[], int numProcessors) {
 
           // increase the game index
           gameIndex += packetSize;
+
+          // cleanup
+          delete[] indexBuf;
+          delete[] solutionBuf;
 
           iteration++;
           if (iteration == numProcessors) {
