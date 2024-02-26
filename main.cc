@@ -212,7 +212,7 @@ void client(int myID) {
 
   cout << "client " << myID << ": packetSize - " << packetSize << ", dataSize - " << dataSize << endl;
 
-  cout << "client " << myID << ": "
+  cout << "client " << myID << ": ";
 
   for (int i = 0; i < dataSize; i++) {
     cout << buf[i];
