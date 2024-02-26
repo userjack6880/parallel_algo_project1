@@ -142,30 +142,35 @@ void server(int argc, char *argv[], int numProcessors) {
     while (gameIndex + packetSize < numGames) {
       // check to see if any clients have data for us, if it's not the first round
       if (!firstRun) {
+        MPI_Request request;
         MPI_Status status;
         int flag;
         int recvPacket;
 
         cout << "waiting for data from clients" << endl;
-        MPI_Recv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+        MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
+        MPI_Test(&request, &flag, &status);
+
         // if there's something, let's get the rest of the data
-        int indexBuf[recvPacket];
-        int solutionBuf[recvPacket];
-        int source = status.MPI_SOURCE;
+        if (flag) {
+          int indexBuf[recvPacket];
+          int solutionBuf[recvPacket];
+          int source = status.MPI_SOURCE;
 
-        cout << "recieved data from client " << source << endl;
-        MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          cout << "recieved data from client " << source << endl;
+          MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-        int die = 0;
-        MPI_Send(&die, 1, MPI_INT, source, 0, MPI_COMM_WORLD);
+          int die = 0;
+          MPI_Send(&die, 1, MPI_INT, source, 0, MPI_COMM_WORLD);
 
-        // increase the game index
-        gameIndex += packetSize;
+          // increase the game index
+          gameIndex += packetSize;
 
-        iteration++;
-        if (iteration == numProcessors) {
-          break;
+          iteration++;
+          if (iteration == numProcessors) {
+            break;
+          }
         }
       }
       else {
