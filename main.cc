@@ -42,9 +42,9 @@ void packageGames(char** buf, string input[], int packetSize) {
   // copy strings to buffer
   size_t offset = 0;
   for (int i = 0; i < packetSize; i++) {
-    strncpy(buf + offset, input[i].c_str(), input[i].length());
+    strncpy(*buf + offset, input[i].c_str(), input[i].length());
     offset += input[i].length();
-    buf[offset++] = '\0';
+    *buf[offset++] = '\0';
   }
 }
 
