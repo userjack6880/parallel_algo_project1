@@ -246,7 +246,7 @@ void server(int argc, char *argv[], int numProcessors) {
       MPI_Send(&kill, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
     }
 
-    cout << "Processed " << gameIndex << " games with maximum packet size of " << packetSize "." << endl;
+    cout << "Processed " << gameIndex << " games with maximum packet size of " << packetSize << "." << endl;
   }
   // Report how cases had a solution.
   cout << "found " << count << " solutions" << endl ;
