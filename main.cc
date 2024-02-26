@@ -265,7 +265,7 @@ void server(int argc, char *argv[], int numProcessors) {
         // initialize the game board
         unsigned char buf[IDIM*JDIM];
         for (int j = 0; j < IDIM*JDIM; j++) {
-          buf[j] = inputStrings[j];
+          buf[j] = inputStrings[i][j];
         }
 
         game_state gameBoard;
