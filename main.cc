@@ -41,11 +41,7 @@ void packageGames(char** buf, string input[], int packetSize) {
   for (int i = 0; i < packetSize; i++) {
     strncpy(*buf + offset, input[i].c_str(), input[i].length());
     offset += input[i].length();
-    (*buf)[offset++] = '\n';
-    cout << "null added at offset " << offset << endl;
   }
-
-  cout << "input length: " << inputLength << endl;
 }
 
 void server(int argc, char *argv[], int numProcessors) {
@@ -215,13 +211,9 @@ void client(int myID) {
 
   cout << "client " << myID << ": packetSize - " << packetSize << ", dataSize - " << dataSize << endl;
 
-  cout << "client " << myID << ": ";
+  int boardSize = dataSize / packetSize;
 
-  for (int i = 27; i < dataSize; i++) {
-    cout << buf[i];
-  }
-
-  cout << endl;
+  cout << "client " << myID << ": boardSize - " << boardSize << endl;
 
   // process the data
   // for (int i = 0; i < packetSize; i++) {
