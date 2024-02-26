@@ -162,6 +162,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
           // increase the game index
           gameIndex += packetSize;
+          break;
         }
       }
       else {
@@ -196,6 +197,7 @@ void server(int argc, char *argv[], int numProcessors) {
           MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 1, MPI_COMM_WORLD);
           MPI_Send(&dataSize, 1, MPI_INT, i + 1, 2, MPI_COMM_WORLD);
           MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 3, MPI_COMM_WORLD);
+          cout << "data sent" << endl;
 
           // increase the game index
           gameIndex += packetSize;
