@@ -217,7 +217,7 @@ void client(int myID) {
 
   cout << "client " << myID << ": ";
 
-  for (int i = 0; i < dataSize; i++) {
+  for (int i = 27; i < dataSize; i++) {
     cout << buf[i];
   }
 
