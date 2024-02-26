@@ -24,12 +24,15 @@ using std::ios;
 
 void packageGames(char* buf, string input[], int packetSize) {
   // calculate length of the full packet
+  cout << "calculating length: ";
   size_t inputLength = 0;
   for (int i = 0; i < packetSize; i++) {
     inputLength += input[i].length() + 1;
   }
+  cout << inputLength << endl;
 
   // allocate memory
+  cout << "allocating memory!" << endl;
   buf = new char[inputLength];
   if (buf == nullptr) {
     cerr << "failed to allocate memory!" << endl;
