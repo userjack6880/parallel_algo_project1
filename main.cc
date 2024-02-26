@@ -142,13 +142,11 @@ void server(int argc, char *argv[], int numProcessors) {
     while (gameIndex + packetSize < numGames) {
       // check to see if any clients have data for us, if it's not the first round
       if (!firstRun) {
-        MPI_Request request;
         MPI_Status status;
         int flag;
         int recvPacket;
 
-        MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
-        MPI_Test(&request, &flag, &status);
+        MPI_Recv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
         // if there's something, let's get the rest of the data
         if (flag) {
           int indexBuf[recvPacket];
