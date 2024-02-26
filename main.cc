@@ -153,8 +153,8 @@ void server(int argc, char *argv[], int numProcessors) {
           int solutionBuf[recvPacket];
           int source = status.MPI_SOURCE;
           cout << "recieved data from client " << source << endl;
-          MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-          MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
           int die = 0;
           MPI_Send(&die, 1, MPI_INT, source, 0, MPI_COMM_WORLD);
@@ -192,9 +192,9 @@ void server(int argc, char *argv[], int numProcessors) {
 
           // send it
           MPI_Send(&packetSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
-          MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
-          MPI_Send(&dataSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
-          MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 0, MPI_COMM_WORLD);
+          MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 1, MPI_COMM_WORLD);
+          MPI_Send(&dataSize, 1, MPI_INT, i + 1, 2, MPI_COMM_WORLD);
+          MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 3, MPI_COMM_WORLD);
 
           // increase the game index
           gameIndex += packetSize;
@@ -229,11 +229,11 @@ void client(int myID) {
     }
     cout << "client " << myID << ": I got data" << endl;
     int bufIndex[packetSize];
-    MPI_Recv(&bufIndex, packetSize, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(&bufIndex, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     int dataSize;
-    MPI_Recv(&dataSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(&dataSize, 1, MPI_INT, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     char* buf = new char[dataSize];
-    MPI_Recv(buf, dataSize, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(buf, dataSize, MPI_CHAR, 0, 3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     int boardSize = dataSize / packetSize;
 
@@ -272,8 +272,8 @@ void client(int myID) {
 
     // send what we found back to the server
     MPI_Send(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    MPI_Send(&bufIndex, packetSize, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    MPI_Send(&solutions, packetSize, MPI_INT, 0, 0, MPI_COMM_WORLD);
+    MPI_Send(&bufIndex, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD);
+    MPI_Send(&solutions, packetSize, MPI_INT, 0, 2, MPI_COMM_WORLD);
 
     // cleanup memory
     delete[] buf;
