@@ -118,8 +118,9 @@ void server(int argc, char *argv[], int numProcessors) {
 
       // read in the initial game state from file
       unsigned char buf[IDIM*JDIM];
-      for (int j = 0; j < IDIM*JDIM; j++)
+      for (int j = 0; j < IDIM*JDIM; j++) {
         buf[j] = inputString[j];
+      }
 
       // Here we search for the solution to the game.   This is where most of
       // the work is performed.  We will want to farm these tasks out to other
@@ -188,12 +189,52 @@ void server(int argc, char *argv[], int numProcessors) {
         MPI_Test(&request, &flag, &status);
 
         if (!flag) {
+          // while we wait, go ahead and process one if there's at least two left
+          if (gameIndex + 1 < numGames) {
+            string inputString;
+            input >> inputString;
+
+            if (inputString.size() != IDIM*JDIM) {
+              cerr << "something wrong in input file format!" << endl;
+              MPI_Abort(MPI_COMM_WORLD,-1);
+            }
+
+            unsigned char buf[IDIM*JDIM];
+            for (int i = 0; i < IDIM*JDIM; i++) {
+              buf[i] = inputString[i];
+            }
+
+            // initialize game board
+            game_board gameBoard;
+            gameBoard.Init(buf);
+
+            move solution[IDIM*JDIM];
+            int size = 0;
+            bool found = depthFirstSearch(gameBoard, size, solution);
+
+            // put the results into the data
+            if (found) {
+              solutions[gameIndex] = 1;
+            }
+            else {
+              solutions[gameIndex] = 0;
+            }
+            inputStrings[gameIndex] = inputString;
+
+            // increment the index
+            gameIndex++;
+
+            // cleanup
+            delete[] buf;
+          }
+
+          // now wait
           MPI_Wait(&request, &status);
           flag = 1;
         }
         else {
           // if the clients are too fast, then there's not enough for the clients to do
-          packetSize *= 2;
+          packetSize++;
         }
 
         // reduce packet size to 1 if gameIndex + packetSize would not be valid
@@ -291,6 +332,8 @@ void server(int argc, char *argv[], int numProcessors) {
         output << "solved" << endl;
 
         count++;
+
+        delete[] buf;
       }
     }
 
