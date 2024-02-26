@@ -173,7 +173,6 @@ void server(int argc, char *argv[], int numProcessors) {
           int dataSize = strlen(buf);
 
           // send it
-          cout << "sending to client " << i + 1 << "'" << stringBuf[0] << "'" << endl;
           MPI_Send(&packetSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
           MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
           MPI_Send(&dataSize, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
@@ -209,11 +208,16 @@ void client(int myID) {
   char* buf = new char[dataSize];
   MPI_Recv(buf, dataSize, MPI_CHAR, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-  cout << "client " << myID << ": packetSize - " << packetSize << ", dataSize - " << dataSize << endl;
-
   int boardSize = dataSize / packetSize;
 
-  cout << "client " << myID << ": boardSize - " << boardSize << endl;
+  // unpackage the data
+  string boardStates[packetSize];
+
+  for (int i = 0; i < packetSize; i++) {
+    boardStates[i].assign(buf + (boardSize*i), boardSize);
+
+    cout << "client " << myID << ": " << boardStates[i] << endl;
+  }
 
   // process the data
   // for (int i = 0; i < packetSize; i++) {
