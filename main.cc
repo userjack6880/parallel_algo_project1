@@ -152,6 +152,8 @@ void server(int argc, char *argv[], int numProcessors) {
       // collapse it into a single charater array
       char* buf;
       packageGames(buf, inputStrings, packetSize);
+
+      cout << inputStrings[1] << " " << buf[i] << endl;
     }
   }
   // Report how cases had a solution.
