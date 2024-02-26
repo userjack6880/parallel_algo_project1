@@ -194,14 +194,14 @@ int main(int argc, char *argv[]) {
   MPI_Init(&argc, &argv);
 
   
-  int myId;
+  int myID;
   int numProcessors;
 
   /* Get the number of processors and my processor identification */
   MPI_Comm_size(MPI_COMM_WORLD, &numProcessors);
-  MPI_Comm_rank(MPI_COMM_WORLD, &myId);
+  MPI_Comm_rank(MPI_COMM_WORLD, &myID);
 
-  if (myId == 0) {
+  if (myID == 0) {
     // Processor 0 runs the server code
     get_timer(); // zero the timer
     server(argc, argv, numProcessors-1); // the number of processors
