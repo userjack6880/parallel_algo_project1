@@ -166,9 +166,10 @@ void server(int argc, char *argv[], int numProcessors) {
           // package into character array
           char* buf;
           packageGames(&buf, stringBuf, packetSize);
+          int dataSize = strlen(buf);
 
           MPI_Send(indexBuf, packetSize, MPI_INT, i + 1, 0, MPI_COMM_WORLD);
-          MPI_Send(buf, strlen(buf), MPI_CHAR, i + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          MPI_Send(buf, dataSize, MPI_CHAR, i + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
         firstRun = 0;
       }
