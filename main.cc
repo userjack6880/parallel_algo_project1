@@ -44,7 +44,7 @@ void packageGames(char** buf, string input[], int packetSize) {
   }
 }
 
-void sendData(int packetSize, iostream input, int &gameIndex, vector<string>& inputStrings, int dest) {
+void sendData(int packetSize, ifstream input, int &gameIndex, vector<string>& inputStrings, int dest) {
   // initialize data for MPI
   int indexBuf[packetSize];
   string stringBuf[packetSize];
