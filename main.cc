@@ -88,7 +88,7 @@ void server(int argc, char *argv[], int numProcessors) {
   }
 
   // output number of processors specified
-  cout << "running on " << numProcessors << " child processors" << endl;
+  cout << "running on " << numProcessors + 1 << " processors" << endl;
 
   // Input case filename 
   ifstream input(argv[1],ios::in);
