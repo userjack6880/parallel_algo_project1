@@ -138,6 +138,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
     // get the first set of packets to distribute
     for (int i = 1; i < numProcessors; i++) {
+      cout << "working on processor " << i << endl;
       // get a number of games based on packetSize
       string inputStrings[packetSize];
       for (int j = 0; j < packetSize; j++) {
@@ -151,6 +152,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
       // collapse it into a single charater array
       char* buf;
+      cout << "packaging!" << endl;
       packageGames(buf, inputStrings, packetSize);
 
       cout << inputStrings[1] << " " << buf[i] << endl;
