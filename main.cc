@@ -34,7 +34,7 @@ void packageGames(char** buf, string input[], int packetSize) {
   // allocate memory
   cout << "allocating memory!" << endl;
   *buf = new char[inputLength];
-  if (buf == nullptr) {
+  if (*buf == nullptr) {
     cerr << "failed to allocate memory!" << endl;
     MPI_Abort(MPI_COMM_WORLD,-1);
   }
