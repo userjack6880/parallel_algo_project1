@@ -257,6 +257,45 @@ void server(int argc, char *argv[], int numProcessors) {
 
     cout << "Processed " << gameIndex << " games with maximum packet size of " << maxPacket << "." << endl;
   }
+
+  // now we have to go back through every result and generate
+  // solutions for problems that have a solution
+  for (int i = 0; i < numGames; i++) {
+    if (!solutions[i]) {
+      continue;
+    }
+    else {
+      count++;
+    }
+    // // initialize the game
+    // game_state gameBoard;
+    // gameBoard.Init(buf);
+
+    // // If we find a solution to the game, put the results in
+    // // solution
+    // move solution[IDIM*JDIM];
+    // int size = 0;
+
+    // // Search for a solution to the puzzle
+    // bool found = depthFirstSearch(gameBoard, size, solution);
+
+    // // If the solution is found we want to output how to solve the puzzle
+    // // in the results file.
+    // if (found) {
+    //   output << "found solution = " << endl;
+    //   game_state s;
+    //   s.Init(buf);
+    //   s.Print(output);
+    //   for (int i = 0; i < size; i++) {
+    //     s.makeMove(solution[i]);
+    //     output << "-->" << endl; 
+    //     s.Print(output);
+    //   }
+    //   output << "solved" << endl;
+    //   count++;
+    // }
+  }
+
   // Report how cases had a solution.
   cout << "found " << count << " solutions" << endl ;
 }
