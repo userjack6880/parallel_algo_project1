@@ -144,7 +144,7 @@ void server(int argc, char *argv[], int numProcessors) {
         cout << "first run" << endl;
         // get the data and send packets to each client
         for (int i = 0; i < numProcessors; i++) {
-          sendData(packetSize, *gameIndex, inputString, i + 1);
+          sendData(packetSize, gameIndex, inputString, i + 1);
         }
         firstRun = 0;
       }
