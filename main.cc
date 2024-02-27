@@ -34,13 +34,13 @@ void sendData(int packetSize, int gameIndex, vector<string>& inputString, int de
   for (int i = 0; i < packetSize; i++) {
     // create string buffer
     for (int j = 0; j < IDIM*JDIM; j++) {
-      stringBuf[j+offset] = inputString[i][j+offset];
+      stringBuf[j+offset] = inputString[gameIndex+i][j+offset];
       offset += IDIM*JDIM;
     }
 
     // create index buffer
     indexBuf[i] = gameIndex + i;
-    cout << i << ": packet index " << endl; //indexBuf[i] << " " << inputString[i] << endl;
+    cout << i << ": packet index " << indexBuf[i] << " " << inputString[gameIndex+i] << endl;
   }
   int dataSize = sizeof(stringBuf);
 
