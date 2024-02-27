@@ -297,8 +297,8 @@ void server(int argc, char *argv[], int numProcessors) {
       MPI_Recv(&solutionBuf, recvPacket, MPI_INT, i + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
       // put record the solution states
-      for (int i = 0; i < recvPacket; i++) {
-        solutions[bufIndex[i]] = solutionBuf[i];
+      for (int j = 0; j < recvPacket; j++) {
+        solutions[bufIndex[j]] = solutionBuf[j];
       }
 
       // kill the child
