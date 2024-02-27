@@ -200,7 +200,7 @@ void server(int argc, char *argv[], int numProcessors) {
               int size = 0;
               bool found = depthFirstSearch(gameBoard, size, solution);
 
-              cout << "put the results into data" << endl;
+              cout << "put the results into data at index " << gameIndex << endl;
               // put the results into the data
               if (found) {
                 solutions[gameIndex] = 1;
