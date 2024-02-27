@@ -344,7 +344,6 @@ void server(int argc, char *argv[], int numProcessors) {
 void client(int myID) {
   while (1) {
     // get data
-    cout << "client " << myID << ": getting data" << endl;
     int packetSize;
     MPI_Recv(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
@@ -361,9 +360,6 @@ void client(int myID) {
 
     int boardSize = dataSize / packetSize;
 
-    cout << "client " << myID << ": data recieved: packet size " << packetSize << ", datasize " << dataSize << endl;
-    cout << "client " << myID << ": first index " << indexBuf[0] << endl;
-
     // unpackage the data
     string boardStates[packetSize];
     for (int i = 0; i < packetSize; i++) {
@@ -371,7 +367,6 @@ void client(int myID) {
     }
 
     // process the data
-    cout << "client " << myID << ": processing data" << endl;
     int solutionBuf[packetSize] = {0};
 
     for (int i = 0; i < packetSize; i++) {
@@ -397,7 +392,6 @@ void client(int myID) {
         solutionBuf[i] = 0;
       }
     }
-    cout << "client " << myID << ": data processed" << endl;
 
     // send what we found back to the server
     MPI_Send(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
