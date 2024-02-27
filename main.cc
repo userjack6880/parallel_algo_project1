@@ -41,7 +41,7 @@ void sendData(int packetSize, int gameIndex, vector<string>& inputString, int de
 
   // send it
   MPI_Send(&packetSize, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
-  MPI_Send(indexBuf, packetSize, MPI_INT, dest, 1, MPI_COMM_WORLD);
+  MPI_Send(&indexBuf, packetSize, MPI_INT, dest, 1, MPI_COMM_WORLD);
   MPI_Send(&dataSize, 1, MPI_INT, dest, 2, MPI_COMM_WORLD);
   MPI_Send(stringBuf, dataSize, MPI_CHAR, dest, 3, MPI_COMM_WORLD);
 }
