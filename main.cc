@@ -200,7 +200,7 @@ void server(int argc, char *argv[], int numProcessors) {
               }
 
               // increment the index
-              gameIndex++;
+              gameIndex = 256;
             }
 
             // check to see if there's data waiting
