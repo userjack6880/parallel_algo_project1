@@ -40,7 +40,7 @@ void sendData(int packetSize, int gameIndex, vector<string>& inputString, int de
 
     // create index buffer
     indexBuf[i] = gameIndex + i;
-    cout << i << ": packet index " << indexBuf[i] << " " << inputString[i] << endl;
+    cout << i << ": packet index " << endl; //indexBuf[i] << " " << inputString[i] << endl;
   }
   int dataSize = sizeof(stringBuf);
 
