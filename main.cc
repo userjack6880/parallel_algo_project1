@@ -365,7 +365,7 @@ void client(int myID) {
 
     int boardSize = dataSize / packetSize;
 
-    cout << "client " << myID << ": data recieved" << endl;
+    cout << "client " << myID << ": data recieved: packet size " << packetSize << ", datasize " << dataSize << endl;
 
     // unpackage the data
     string boardStates[packetSize];
