@@ -177,7 +177,7 @@ void server(int argc, char *argv[], int numProcessors) {
           // while we wait, go ahead and process one if there's at least two left
           while (!flag) {
             // if this is not the last game, as that's handled outside of outer while
-            if ((gameIndex + 1) < numGames) {
+            if (gameIndex < numGames) {
               cout << "solving game " << gameIndex << " while waiting" << endl;
               // read in the initial game state from the inputString vector
               unsigned char buf[IDIM*JDIM];
