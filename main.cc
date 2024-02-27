@@ -38,6 +38,7 @@ void sendData(int packetSize, int gameIndex, vector<string>& inputString, int de
     }
   }
   int dataSize = sizeof(stringBuf);
+  cout << "packet first index " << indexBuf[0] << endl;
 
   // send it
   MPI_Send(&packetSize, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
