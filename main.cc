@@ -22,66 +22,34 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
-void packageGames(char** buf, string input[], int packetSize) {
-  // calculate length of the full packet
-  size_t inputLength = 0;
-  for (int i = 0; i < packetSize; i++) {
-    inputLength += input[i].length() + 1;
-  }
-
-  // allocate memory
-  *buf = new char[inputLength];
-  if (*buf == nullptr) {
-    cerr << "failed to allocate memory!" << endl;
-    MPI_Abort(MPI_COMM_WORLD,-1);
-  }
-
-  // copy strings to buffer
-  size_t offset = 0;
-  for (int i = 0; i < packetSize; i++) {
-    strncpy(*buf + offset, input[i].c_str(), input[i].length());
-    offset += input[i].length();
-  }
-}
-
-void sendData(int packetSize, ifstream &input, int &gameIndex, vector<string>& inputStrings, int dest) {
+void sendData(int packetSize, int &gameIndex, vector<string>& inputString, int dest) {
   // initialize data for MPI
   int indexBuf[packetSize];
-  string stringBuf[packetSize];
+  unsigned char stringBuf[packetSize*IDIM*JDIM];
 
   // get data for the packet size
+  size_t = offset = 0;
   for (int i = 0; i < packetSize; i++) {
-    input >> stringBuf[i];
-
-    if (stringBuf[i].size() != IDIM*JDIM) {
-      cerr << "something wrong in input file format!" << endl;
-      MPI_Abort(MPI_COMM_WORLD, -1);
+    for (int j = 0; j < IDIM*JDIM; j++) {
+      buf[j+offset] = inputString[i][j+offset];
+      offset += IDIM*JDIM;
     }
-
-    indexBuf[i] = gameIndex + i;
-    inputStrings[indexBuf[i]] = stringBuf[i];
   }
-  // package into character array
-  char* buf;
-  packageGames(&buf, stringBuf, packetSize);
-  int dataSize = strlen(buf);
+  int dataSize = sizeof(stringBuf);
 
   // send it
   MPI_Send(&packetSize, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
   MPI_Send(indexBuf, packetSize, MPI_INT, dest, 1, MPI_COMM_WORLD);
   MPI_Send(&dataSize, 1, MPI_INT, dest, 2, MPI_COMM_WORLD);
-  MPI_Send(buf, dataSize, MPI_CHAR, dest, 3, MPI_COMM_WORLD);
+  MPI_Send(stringBuf, dataSize, MPI_CHAR, dest, 3, MPI_COMM_WORLD);
 
   // increase the game index
   gameIndex += packetSize;
-
-  // cleanup
-  delete[] buf;
 }
 
 void server(int argc, char *argv[], int numProcessors) {
 
-  // Check to make sure the server can run
+  // check to make sure the server can run
   if(argc != 3) {
     cerr << "two arguments please!" << endl;
     MPI_Abort(MPI_COMM_WORLD,-1);
@@ -90,10 +58,10 @@ void server(int argc, char *argv[], int numProcessors) {
   // output number of processors specified
   cout << "running on " << numProcessors + 1 << " processors" << endl;
 
-  // Input case filename 
+  // input case filename 
   ifstream input(argv[1],ios::in);
 
-  // Output case filename
+  // output case filename
   ofstream output(argv[2],ios::out);
   
   int count = 0;
@@ -104,10 +72,10 @@ void server(int argc, char *argv[], int numProcessors) {
   // get the number of games from the input file
   input >> numGames;
 
-
   // if the number of processors is 0, the server is now the processor
-  if (numProcessors + 1 == 1) {
-    for (int i = 0; i < numGames; i++) {  // for each game in file...
+  if (numProcessors == 0) {
+    // run through each game
+    for (int i = 0; i < numGames; i++) {
       string inputString;
       input >> inputString;
 
@@ -122,28 +90,18 @@ void server(int argc, char *argv[], int numProcessors) {
         buf[j] = inputString[j];
       }
 
-      // Here we search for the solution to the game.   This is where most of
-      // the work is performed.  We will want to farm these tasks out to other
-      // processors in the parallel version.  To do this, send buf[] to the
-      // client processor and use game_board.Init() on the Client to initialize
-      // game board.  The result that will need to be sent back will either be
-      // the moves required to solve the game or an indication that the game was
-      // not solvable.
-
       // initialize the game
       game_state gameBoard;
       gameBoard.Init(buf);
 
-      // If we find a solution to the game, put the results in
-      // solution
+      // variables to store solutions and size
       move solution[IDIM*JDIM];
       int size = 0;
 
-      // Search for a solution to the puzzle
+      // search for a solution to the puzzle
       bool found = depthFirstSearch(gameBoard, size, solution);
 
-      // If the solution is found we want to output how to solve the puzzle
-      // in the results file.
+      // if solution is found, output how to solve the puzzle
       if (found) {
         output << "found solution = " << endl;
         game_state s;
@@ -161,36 +119,42 @@ void server(int argc, char *argv[], int numProcessors) {
   }
   // if it's greater than 1, then we can break it apart
   else {
-    // get data and package into a packet
+    // initialize tracking
     int gameIndex = 0;
     int solutions[numGames] = {0};
-    vector<string> inputStrings(numGames);
+    vector<string> inputString(numGames);
 
-    // run through the input
+    // run through the input and save each game into input vector
+    for (int i = 0; i < numGames; i++) {
+      input >> inputString[i];
+    }
+
+    // now run over each input string and pass to clients
     int firstRun = 1;
     while (1) {
       // first run
       if (firstRun) {
-        // get the data and send two packets to each client - an array of game indexes
-        // and gameboards
+        // get the data and send packets to each client
         for (int i = 0; i < numProcessors; i++) {
-          sendData(packetSize, input, gameIndex, inputStrings, i + 1);
+          sendData(packetSize, gameIndex, inputString, i + 1);
         }
         firstRun = 0;
       }
       else {
+        // every other run
         MPI_Request request;
         MPI_Status status;
         int flag = 0;
         int recvPacket;
 
-        // cout << "waiting for data from clients" << endl;
+        // check to see if there's data from a client
         MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
         MPI_Test(&request, &flag, &status);
 
         if (!flag) {
           // if we're waiting on a client, we have too much for them to do
           if (packetSize > 1) {
+            // record the max packet size
             if (packetSize > maxPacket) {
               maxPacket = packetSize;
             }
@@ -199,48 +163,38 @@ void server(int argc, char *argv[], int numProcessors) {
 
           // while we wait, go ahead and process one if there's at least two left
           while (!flag) {
-            // if (gameIndex + 1 < numGames) {
-            //   string inputString;
-            //   input >> inputString;
+            // if this is not the last game, as that's handled outside of outer while
+            if (gameIndex + 1 < numGames) {
+              // read in the initial game state from the inputString vector
+              unsigned char buf[IDIM*JDIM];
+              for (int i = 0; i < IDIM*JDIM; i++) {
+                buf[i] = inputString[gameIndex][i];
+              }
 
-            //   if (inputString.size() != IDIM*JDIM) {
-            //     cerr << "something wrong in input file format!" << endl;
-            //     MPI_Abort(MPI_COMM_WORLD,-1);
-            //   }
+              // initialize game board
+              game_state gameBoard;
+              gameBoard.Init(buf);
 
-            //   unsigned char buf[IDIM*JDIM];
-            //   for (int i = 0; i < IDIM*JDIM; i++) {
-            //     buf[i] = inputString[i];
-            //   }
+              move solution[IDIM*JDIM];
+              int size = 0;
+              bool found = depthFirstSearch(gameBoard, size, solution);
 
-            //   // initialize game board
-            //   game_state gameBoard;
-            //   gameBoard.Init(buf);
+              // put the results into the data
+              if (found) {
+                solutions[gameIndex] = 1;
+              }
+              else {
+                solutions[gameIndex] = 0;
+              }
 
-            //   move solution[IDIM*JDIM];
-            //   int size = 0;
-            //   bool found = depthFirstSearch(gameBoard, size, solution);
-
-            //   // put the results into the data
-            //   if (found) {
-            //     solutions[gameIndex] = 1;
-            //   }
-            //   else {
-            //     solutions[gameIndex] = 0;
-            //   }
-            //   inputStrings[gameIndex] = inputString;
-
-            //   // increment the index
-            //   gameIndex++;
-            // }
+              // increment the index
+              gameIndex++;
+            }
 
             // check to see if there's data waiting
+            // this should set flag to 1 and break out of the while loop
             MPI_Test(&request, &flag, &status);
           }
-
-          // // now wait
-          // MPI_Wait(&request, &status);
-          flag = 1;
         }
         else {
           // if the clients are too fast, then there's not enough for the clients to do
@@ -249,28 +203,30 @@ void server(int argc, char *argv[], int numProcessors) {
 
         // reduce packet size to 1 if gameIndex + packetSize would not be valid
         if (gameIndex + packetSize > numGames) {
+          // record the max packet size
           if (packetSize > maxPacket) {
             maxPacket = packetSize;
           }
           packetSize = 1;
         }
 
-        // if there's something, let's get the rest of the data
+        // now that we know there's something for us, let's get the rest of the data
         if (flag) {
-          int bufIndex[recvPacket];
+          int indexBuf[recvPacket];
           int solutionBuf[recvPacket];
           int source = status.MPI_SOURCE;
 
-          MPI_Recv(&bufIndex, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          // recieve the rest of the data sent back to us
+          MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
           MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
           // put record the solution states
           for (int i = 0; i < recvPacket; i++) {
-            solutions[bufIndex[i]] = solutionBuf[i];
+            solutions[indexBuf[i]] = solutionBuf[i];
           }
 
           // send data back to the client
-          sendData(packetSize, input, gameIndex, inputStrings, source);
+          sendData(packetSize, gameIndex, inputString, source);
         }
 
         // breakout of while loop if the game index has moved to the end
@@ -283,22 +239,21 @@ void server(int argc, char *argv[], int numProcessors) {
     // kill each child as they finish
     for (int i = 0; i < numProcessors; i++) {
       MPI_Request request;
-      int flag = 0;
       int recvPacket;
 
-      // cout << "waiting for data from clients" << endl;
+      // wait for data to be recieved
       MPI_Recv(&recvPacket, 1, MPI_INT, i + 1, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
  
       // if there's something, let's get the rest of the data
-      int bufIndex[recvPacket];
+      int indexBuf[recvPacket];
       int solutionBuf[recvPacket];
 
-      MPI_Recv(&bufIndex, recvPacket, MPI_INT, i + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      MPI_Recv(&indexBuf, recvPacket, MPI_INT, i + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       MPI_Recv(&solutionBuf, recvPacket, MPI_INT, i + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
       // put record the solution states
       for (int j = 0; j < recvPacket; j++) {
-        solutions[bufIndex[j]] = solutionBuf[j];
+        solutions[indexBuf[j]] = solutionBuf[j];
       }
 
       // kill the child
@@ -310,13 +265,15 @@ void server(int argc, char *argv[], int numProcessors) {
     // solutions for problems that have a solution
     for (int i = 0; i < numGames; i++) {
       if (!solutions[i]) {
+        cout << "game " << i << ": " << inputString[i] << " no solution" << endl;
         continue;
       }
       else {
+        cout << "game " << i << ": " << inputString[i] << " solution" << endl;
         // initialize the game board
         unsigned char buf[IDIM*JDIM];
         for (int j = 0; j < IDIM*JDIM; j++) {
-          buf[j] = inputStrings[i][j];
+          buf[j] = inputString[i][j];
         }
 
         game_state gameBoard;
@@ -363,11 +320,11 @@ void client(int myID) {
     if (packetSize == 0) {
       break;
     }
-    int bufIndex[packetSize];
-    MPI_Recv(&bufIndex, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    int indexBuf[packetSize];
+    MPI_Recv(&indexBuf, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     int dataSize;
     MPI_Recv(&dataSize, 1, MPI_INT, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    char* buf = new char[dataSize];
+    char buf[dataSize];
     MPI_Recv(buf, dataSize, MPI_CHAR, 0, 3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     int boardSize = dataSize / packetSize;
@@ -379,7 +336,7 @@ void client(int myID) {
     }
 
     // process the data
-    int solutions[packetSize] = {0};
+    int solutionBuf[packetSize] = {0};
 
     for (int i = 0; i < packetSize; i++) {
       unsigned char boardState[IDIM*JDIM];
@@ -398,20 +355,17 @@ void client(int myID) {
 
       // If a solution is found, mark it
       if (found) {
-        solutions[i] = 1;
+        solutionBuf[i] = 1;
       }
       else {
-        solutions[i] = 0;
+        solutionBuf[i] = 0;
       }
     }
 
     // send what we found back to the server
     MPI_Send(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    MPI_Send(&bufIndex, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD);
-    MPI_Send(&solutions, packetSize, MPI_INT, 0, 2, MPI_COMM_WORLD);
-
-    // cleanup memory
-    delete[] buf;
+    MPI_Send(&indexBuf, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD);
+    MPI_Send(&solutionBuf, packetSize, MPI_INT, 0, 2, MPI_COMM_WORLD);
   }
 }
 
