@@ -31,7 +31,7 @@ void sendData(int packetSize, int &gameIndex, vector<string>& inputString, int d
   size_t offset = 0;
   for (int i = 0; i < packetSize; i++) {
     for (int j = 0; j < IDIM*JDIM; j++) {
-      buf[j+offset] = inputString[i][j+offset];
+      stringBuf[j+offset] = inputString[i][j+offset];
       offset += IDIM*JDIM;
     }
   }
