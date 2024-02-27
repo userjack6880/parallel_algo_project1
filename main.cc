@@ -279,8 +279,8 @@ void server(int argc, char *argv[], int numProcessors) {
       int indexBuf[recvPacket];
       int solutionBuf[recvPacket];
 
-      MPI_Recv(&indexBuf, recvPacket, MPI_INT, i + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-      MPI_Recv(&solutionBuf, recvPacket, MPI_INT, i + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      MPI_Recv(indexBuf, recvPacket, MPI_INT, i + 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      MPI_Recv(solutionBuf, recvPacket, MPI_INT, i + 1, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
       // put record the solution states
       for (int j = 0; j < recvPacket; j++) {
