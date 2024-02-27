@@ -145,6 +145,7 @@ void server(int argc, char *argv[], int numProcessors) {
         for (int i = 1; i < numProcessors; i++) {
           sendData(packetSize, gameIndex, inputString, i);
         }
+        cout << "3: " << gameIndex << " of " << numGames << endl;
 
         // increase the game index
         cout << "packet sent, increasing game index from " << gameIndex;
@@ -178,7 +179,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
           // while we wait, go ahead and process one if there's at least two left
           while (!flag) {
-            cout << "3: " << gameIndex << " of " << numGames << endl;
+            cout << "4: " << gameIndex << " of " << numGames << endl;
             // if this is not the last game, as that's handled outside of outer while
             if (gameIndex < numGames) {
               cout << "solving game " << gameIndex << " while waiting" << endl;
