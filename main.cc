@@ -366,6 +366,7 @@ void client(int myID) {
     int boardSize = dataSize / packetSize;
 
     cout << "client " << myID << ": data recieved: packet size " << packetSize << ", datasize " << dataSize << endl;
+    cout << "client " << myID << ": first index " << indexBuf[i] << endl;
 
     // unpackage the data
     string boardStates[packetSize];
@@ -404,8 +405,8 @@ void client(int myID) {
 
     // send what we found back to the server
     MPI_Send(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-    MPI_Send(&indexBuf, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD);
-    MPI_Send(&solutionBuf, packetSize, MPI_INT, 0, 2, MPI_COMM_WORLD);
+    MPI_Send(indexBuf, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD);
+    MPI_Send(solutionBuf, packetSize, MPI_INT, 0, 2, MPI_COMM_WORLD);
   }
 }
 
