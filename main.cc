@@ -165,6 +165,7 @@ void server(int argc, char *argv[], int numProcessors) {
         if (!flag) {
           // if we're waiting on a client, we have too much for them to do
           if (packetSize > 1) {
+            cout << "reducing packet size" << endl;
             // record the max packet size
             if (packetSize > maxPacket) {
               maxPacket = packetSize;
@@ -214,12 +215,14 @@ void server(int argc, char *argv[], int numProcessors) {
           }
         }
         else {
+          cout << "increasing packet size" << endl;
           // if the clients are too fast, then there's not enough for the clients to do
           packetSize++;
         }
 
         // reduce packet size to 1 if gameIndex + packetSize would not be valid
         if (gameIndex + packetSize > numGames) {
+          cout << "setting packet size 1" << endl;
           // record the max packet size
           if (packetSize > maxPacket) {
             maxPacket = packetSize;
