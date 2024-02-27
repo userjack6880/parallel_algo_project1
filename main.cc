@@ -209,12 +209,9 @@ void server(int argc, char *argv[], int numProcessors) {
               else {
                 solutions[gameIndex] = 0;
               }
-
-              cout << "solution " << gameIndex << ": " << solutions[gameIndex] << endl;
-
               // increment the index
               cout << "increasing game index from " << gameIndex;
-              gameIndex = 256;
+              gameIndex++;
               cout << " to " << gameIndex << endl;
             }
 
