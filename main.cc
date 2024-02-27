@@ -22,7 +22,7 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
-void sendData(int packetSize, int &gameIndex, vector<string>& inputString, int dest) {
+void sendData(int packetSize, int gameIndex, vector<string>& inputString, int dest) {
   cout << "sending data to client " << dest << endl;
   // initialize data for MPI
   int indexBuf[packetSize];
@@ -44,11 +44,6 @@ void sendData(int packetSize, int &gameIndex, vector<string>& inputString, int d
   MPI_Send(indexBuf, packetSize, MPI_INT, dest, 1, MPI_COMM_WORLD);
   MPI_Send(&dataSize, 1, MPI_INT, dest, 2, MPI_COMM_WORLD);
   MPI_Send(stringBuf, dataSize, MPI_CHAR, dest, 3, MPI_COMM_WORLD);
-
-  // increase the game index
-  cout << "packet sent, increasing game index from " << gameIndex;
-  gameIndex += packetSize;
-  cout << " to " << gameIndex << endl;
 }
 
 void server(int argc, char *argv[], int numProcessors) {
@@ -147,6 +142,12 @@ void server(int argc, char *argv[], int numProcessors) {
         for (int i = 0; i < numProcessors; i++) {
           sendData(packetSize, gameIndex, inputString, i + 1);
         }
+
+        // increase the game index
+        cout << "packet sent, increasing game index from " << gameIndex;
+        gameIndex += packetSize;
+        cout << " to " << gameIndex << endl;
+
         firstRun = 0;
       }
       else {
@@ -242,6 +243,11 @@ void server(int argc, char *argv[], int numProcessors) {
           // send data back to the client
           cout << "sending client new data" << endl;
           sendData(packetSize, gameIndex, inputString, source);
+
+          // increase the game index
+          cout << "packet sent, increasing game index from " << gameIndex;
+          gameIndex += packetSize;
+          cout << " to " << gameIndex << endl;
         }
 
         // breakout of while loop if the game index has moved to the end
