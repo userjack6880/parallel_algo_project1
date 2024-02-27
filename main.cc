@@ -55,7 +55,7 @@ void server(int argc, char *argv[], int numProcessors) {
   }
 
   // output number of processors specified
-  cout << "running on " << numProcessors << " child processors" << endl;
+  cout << "running on " << numProcessors << " processors" << endl;
 
   // input case filename 
   ifstream input(argv[1],ios::in);
@@ -73,7 +73,7 @@ void server(int argc, char *argv[], int numProcessors) {
   cout << numGames << " games" << endl;
 
   // if the number of processors is 0, the server is now the processor
-  if (numProcessors == 0) {
+  if (numProcessors == 1) {
     // run through each game
     for (int i = 0; i < numGames; i++) {
       string inputString;
@@ -139,7 +139,7 @@ void server(int argc, char *argv[], int numProcessors) {
       if (firstRun) {
         cout << "first run" << endl;
         // get the data and send packets to each client
-        for (int i = 0; i < numProcessors; i++) {
+        for (int i = 1; i < numProcessors; i++) {
           sendData(packetSize, gameIndex, inputString, i + 1);
         }
 
@@ -415,8 +415,7 @@ int main(int argc, char *argv[]) {
   if (myID == 0) {
     // Processor 0 runs the server code
     get_timer(); // zero the timer
-    server(argc, argv, numProcessors-1); // the number of processors
-                                         // excludes the server
+    server(argc, argv, numProcessors);
 
     // Measure the running time of the server
     cout << "execution time = " << get_timer() << " seconds." << endl;
