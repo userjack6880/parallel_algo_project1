@@ -122,7 +122,7 @@ void server(int argc, char *argv[], int numProcessors) {
     cout << "initialize tracking" << endl;
     // initialize tracking
     int gameIndex = 0;
-    cout << "game index " << gameIndex << endl;
+    cout << "game index " << gameIndex << " of " << numGames << endl;
     int solutions[numGames] = {0};
     vector<string> inputString(numGames);
 
@@ -369,6 +369,7 @@ void client(int myID) {
     }
 
     // process the data
+    cout << "client " << myID << "processing data" << endl;
     int solutionBuf[packetSize] = {0};
 
     for (int i = 0; i < packetSize; i++) {
@@ -394,6 +395,7 @@ void client(int myID) {
         solutionBuf[i] = 0;
       }
     }
+    cout << "client " << myID << "data processed" << endl;
 
     // send what we found back to the server
     MPI_Send(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
