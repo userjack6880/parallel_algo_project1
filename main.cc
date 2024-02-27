@@ -125,17 +125,19 @@ void server(int argc, char *argv[], int numProcessors) {
     int solutions[numGames] = {0};
     vector<string> inputString(numGames);
 
-    cout << "game index " << gameIndex << " of " << numGames << endl;
+    cout << "0: " << gameIndex << " of " << numGames << endl;
 
     // run through the input and save each game into input vector
     cout << "saving games into input vector" << endl;
     for (int i = 0; i < numGames; i++) {
       input >> inputString[i];
     }
+    cout << "1: " << gameIndex << " of " << numGames << endl;
 
     // now run over each input string and pass to clients
     int firstRun = 1;
     while (1) {
+      cout << "2: " << gameIndex << " of " << numGames << endl;
       // first run
       if (firstRun) {
         cout << "first run" << endl;
@@ -176,7 +178,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
           // while we wait, go ahead and process one if there's at least two left
           while (!flag) {
-            cout << gameIndex << " of " << numGames << endl;
+            cout << "3: " << gameIndex << " of " << numGames << endl;
             // if this is not the last game, as that's handled outside of outer while
             if (gameIndex < numGames) {
               cout << "solving game " << gameIndex << " while waiting" << endl;
