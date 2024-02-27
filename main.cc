@@ -134,6 +134,7 @@ void server(int argc, char *argv[], int numProcessors) {
     cout << "saving games into input vector" << endl;
     for (int i = 0; i < numGames; i++) {
       input >> inputString[i];
+      cout << "input " << i << ": " << inputString[i] << endl;
     }
 
     // now run over each input string and pass to clients
