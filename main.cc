@@ -199,40 +199,40 @@ void server(int argc, char *argv[], int numProcessors) {
 
           // while we wait, go ahead and process one if there's at least two left
           while (!flag) {
-            // if (gameIndex + 1 < numGames) {
-            //   string inputString;
-            //   input >> inputString;
+            if (gameIndex + 1 < numGames) {
+              string inputString;
+              input >> inputString;
 
-            //   if (inputString.size() != IDIM*JDIM) {
-            //     cerr << "something wrong in input file format!" << endl;
-            //     MPI_Abort(MPI_COMM_WORLD,-1);
-            //   }
+              if (inputString.size() != IDIM*JDIM) {
+                cerr << "something wrong in input file format!" << endl;
+                MPI_Abort(MPI_COMM_WORLD,-1);
+              }
 
-            //   unsigned char buf[IDIM*JDIM];
-            //   for (int i = 0; i < IDIM*JDIM; i++) {
-            //     buf[i] = inputString[i];
-            //   }
+              unsigned char buf[IDIM*JDIM];
+              for (int i = 0; i < IDIM*JDIM; i++) {
+                buf[i] = inputString[i];
+              }
 
-            //   // initialize game board
-            //   game_state gameBoard;
-            //   gameBoard.Init(buf);
+              // initialize game board
+              game_state gameBoard;
+              gameBoard.Init(buf);
 
-            //   move solution[IDIM*JDIM];
-            //   int size = 0;
-            //   bool found = depthFirstSearch(gameBoard, size, solution);
+              move solution[IDIM*JDIM];
+              int size = 0;
+              bool found = depthFirstSearch(gameBoard, size, solution);
 
-            //   // put the results into the data
-            //   if (found) {
-            //     solutions[gameIndex] = 1;
-            //   }
-            //   else {
-            //     solutions[gameIndex] = 0;
-            //   }
-            //   inputStrings[gameIndex] = inputString;
+              // put the results into the data
+              if (found) {
+                solutions[gameIndex] = 1;
+              }
+              else {
+                solutions[gameIndex] = 0;
+              }
+              inputStrings[gameIndex] = inputString;
 
-            //   // increment the index
-            //   gameIndex++;
-            // }
+              // increment the index
+              gameIndex++;
+            }
 
             // check to see if there's data waiting
             MPI_Test(&request, &flag, &status);
