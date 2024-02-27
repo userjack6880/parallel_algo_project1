@@ -41,7 +41,7 @@ void sendData(int packetSize, int gameIndex, vector<string>& inputString, int de
 
   // send it
   MPI_Send(&packetSize, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
-  MPI_Send(&indexBuf, packetSize, MPI_INT, dest, 1, MPI_COMM_WORLD);
+  MPI_Send(indexBuf, packetSize, MPI_INT, dest, 1, MPI_COMM_WORLD);
   MPI_Send(&dataSize, 1, MPI_INT, dest, 2, MPI_COMM_WORLD);
   MPI_Send(stringBuf, dataSize, MPI_CHAR, dest, 3, MPI_COMM_WORLD);
 }
@@ -243,8 +243,8 @@ void server(int argc, char *argv[], int numProcessors) {
           int source = status.MPI_SOURCE;
 
           // recieve the rest of the data sent back to us
-          MPI_Recv(&indexBuf, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-          MPI_Recv(&solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          MPI_Recv(indexBuf, recvPacket, MPI_INT, source, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+          MPI_Recv(solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
           // put record the solution states
           cout << "recording " << recvPacket << " solutions" << endl;
@@ -357,7 +357,7 @@ void client(int myID) {
       break;
     }
     int indexBuf[packetSize];
-    MPI_Recv(&indexBuf, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(indexBuf, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     int dataSize;
     MPI_Recv(&dataSize, 1, MPI_INT, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     char buf[dataSize];
