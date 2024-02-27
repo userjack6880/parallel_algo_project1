@@ -336,6 +336,7 @@ void server(int argc, char *argv[], int numProcessors) {
 void client(int myID) {
   while (1) {
     // get data
+    cout << "client " << myID << ": getting data" << endl;
     int packetSize;
     MPI_Recv(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
@@ -351,6 +352,8 @@ void client(int myID) {
     MPI_Recv(buf, dataSize, MPI_CHAR, 0, 3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     int boardSize = dataSize / packetSize;
+
+    cout << "client " << myID << ": data recieved" << endl;
 
     // unpackage the data
     string boardStates[packetSize];
