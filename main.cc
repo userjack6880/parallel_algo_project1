@@ -183,12 +183,15 @@ void server(int argc, char *argv[], int numProcessors) {
             // if this is not the last game, as that's handled outside of outer while
             if (gameIndex < numGames) {
               cout << "solving game " << gameIndex << " while waiting" << endl;
+
+              cout << "read in initial game state" << endl;
               // read in the initial game state from the inputString vector
               unsigned char buf[IDIM*JDIM];
               for (int i = 0; i < IDIM*JDIM; i++) {
                 buf[i] = inputString[gameIndex][i];
               }
 
+              cout << "initialize game board" << endl;
               // initialize game board
               game_state gameBoard;
               gameBoard.Init(buf);
@@ -197,6 +200,7 @@ void server(int argc, char *argv[], int numProcessors) {
               int size = 0;
               bool found = depthFirstSearch(gameBoard, size, solution);
 
+              cout << "put the results into data" << endl;
               // put the results into the data
               if (found) {
                 solutions[gameIndex] = 1;
