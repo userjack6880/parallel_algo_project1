@@ -127,6 +127,7 @@ void server(int argc, char *argv[], int numProcessors) {
     cout << "initialize tracking" << endl;
     // initialize tracking
     int gameIndex = 0;
+    cout << "game index " << gameIndex << endl;
     int solutions[numGames] = {0};
     vector<string> inputString(numGames);
 
