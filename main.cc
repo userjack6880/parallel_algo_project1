@@ -184,7 +184,7 @@ void server(int argc, char *argv[], int numProcessors) {
             if (gameIndex * numProcessors < numGames) {
               // read in the initial game state from the inputString vector
               unsigned char buf[IDIM*JDIM];
-              inputBuffer(inputString[gameindex], buf);
+              inputBuffer(inputString[gameIndex], buf);
 
               // initialize game board
               game_state gameBoard;
