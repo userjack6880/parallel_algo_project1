@@ -34,13 +34,10 @@ string readInput(ifstream &input) {
   return inputString;
 }
 
-unsigned char inputBuffer(string inputString) {
-  unsigned char buf[IDIM*JDIM];
+void inputBuffer(string& inputString, unsigned char* buf) {
   for (int i = 0; i < IDIM*JDIM; i++) {
     buf[i] = inputString[i];
   }
-
-  return *buf;
 }
 
 void sendData(int packetSize, int gameIndex, vector<string>& inputString, int dest) {
@@ -104,7 +101,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
       // read in the initial game state from file
       unsigned char buf[IDIM*JDIM];
-      buf = inputBuffer(inputString);
+      inputBuffer(inputString, buf);
 
       // initialize the game
       game_state gameBoard;
