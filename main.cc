@@ -34,9 +34,9 @@ void sendData(int packetSize, int gameIndex, vector<string>& inputString, int de
   for (int i = 0; i < packetSize; i++) {
     // create string buffer
     for (int j = 0; j < IDIM*JDIM; j++) {
-      stringBuf[j+offset] = inputString[0][j];
-      offset += IDIM*JDIM;
+      stringBuf[j+offset] = inputString[gameIndex+i][j];
     }
+    offset += IDIM*JDIM;
 
     // create index buffer
     indexBuf[i] = gameIndex + i;
