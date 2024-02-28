@@ -307,16 +307,7 @@ void server(int argc, char *argv[], int numProcessors) {
         depthFirstSearch(gameBoard, size, solution);
 
         // now output to file
-        output << "found solution = " << endl;
-        gameBoard.Init(buf);
-        gameBoard.Print(output);
-        for (int j = 0; j < size; j++) {
-          gameBoard.makeMove(solution[j]);
-          output << "-->" << endl;
-          gameBoard.Print(output);
-        }
-        output << "solved" << endl;
-
+        outputSolution(buf, output, solution, size);
         count++;
       }
     }
