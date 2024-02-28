@@ -9,4 +9,4 @@
 #SBATCH --no-reque
 #SBATCH --qos=class-cse4163
 module load openmpi
-mpirun -np 1 ./project1 hard_sample.dat sol_hard.01 >& results.01p
+mpirun -np 1 ./project1 hard_sample.dat sol_hard.01>& results.01p
