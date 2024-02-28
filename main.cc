@@ -40,6 +40,19 @@ void inputBuffer(string& inputString, unsigned char* buf) {
   }
 }
 
+void outputSolution(unsigned char* buf, ofstream& output, move solution[], int size) {
+  output << "found solution = " << endl;
+  game_state s;
+  s.Init(buf);
+  s.Print(output);
+  for (int i = 0; i < size; i++) {
+    s.makeMove(solution[i]);
+    output << "-->" << endl;
+    s.Print(output);
+  }
+  output << "solved" << endl;
+}
+
 void sendData(int packetSize, int gameIndex, vector<string>& inputString, int dest) {
   // initialize data for MPI
   int indexBuf[packetSize];
@@ -116,16 +129,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
       // if solution is found, output how to solve the puzzle
       if (found) {
-        output << "found solution = " << endl;
-        game_state s;
-        s.Init(buf);
-        s.Print(output);
-        for (int i = 0; i < size; i++) {
-          s.makeMove(solution[i]);
-          output << "-->" << endl; 
-          s.Print(output);
-        }
-        output << "solved" << endl;
+        outputSolution(buf, output, solution, size);
         count++;
       }
     }
