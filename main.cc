@@ -17,6 +17,7 @@ using std::endl;
 
 using std::vector;
 using std::string;
+using std::stoi;
 
 using std::ofstream;
 using std::ifstream;
@@ -104,13 +105,13 @@ void server(int argc, char *argv[], int numProcessors) {
   int maxPacket = 1;
 
   if(argc > 3) {
-    packetSize = argv[3];
+    packetSize = stoi(argv[3]);
   }
   if(argc > 4) {
-    increasePacket = argv[4];
+    increasePacket = stoi(argv[4]);
   }
   if(argc > 5) {
-    increasePacket = argv[5];
+    increasePacket = stoi(argv[5]);
   }
 
   // get the number of games from the input file
