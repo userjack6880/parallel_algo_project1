@@ -40,7 +40,7 @@ void inputBuffer(const string& inputString, unsigned char* buf) {
   }
 }
 
-void outputSolution(const unsigned char* buf, ofstream& output, const move solution[], const int size) {
+void outputSolution(unsigned char* buf, ofstream& output, const move solution[], const int size) {
   output << "found solution = " << endl;
   game_state s;
   s.Init(buf);
