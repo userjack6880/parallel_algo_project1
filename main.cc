@@ -34,13 +34,13 @@ string readInput(ifstream &input) {
   return inputString;
 }
 
-void inputBuffer(string& inputString, unsigned char* buf) {
+void inputBuffer(const string& inputString, unsigned char* buf) {
   for (int i = 0; i < IDIM*JDIM; i++) {
     buf[i] = inputString[i];
   }
 }
 
-void outputSolution(unsigned char* buf, ofstream& output, move solution[], int size) {
+void outputSolution(const unsigned char* buf, ofstream& output, const move solution[], cost int size) {
   output << "found solution = " << endl;
   game_state s;
   s.Init(buf);
@@ -53,7 +53,7 @@ void outputSolution(unsigned char* buf, ofstream& output, move solution[], int s
   output << "solved" << endl;
 }
 
-void sendData(int packetSize, int gameIndex, vector<string>& inputString, int dest) {
+void sendData(const int packetSize, const int gameIndex, const vector<string>& inputString, const int dest) {
   // initialize data for MPI
   int indexBuf[packetSize];
   unsigned char stringBuf[packetSize*IDIM*JDIM];
