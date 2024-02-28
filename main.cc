@@ -83,7 +83,7 @@ void sendData(const int packetSize, const int gameIndex, const vector<string>& i
 void server(int argc, char *argv[], int numProcessors) {
 
   // check to make sure the server can run
-  if(argc < 4) {
+  if(argc < 3) {
     cerr << "not enough arguments" << endl;
     MPI_Abort(MPI_COMM_WORLD,-1);
   }
@@ -104,15 +104,15 @@ void server(int argc, char *argv[], int numProcessors) {
   int decreasePacket = 0;
   int maxPacket = 1;
 
-  if(argc > 3) {
-    packetSize = stoi(argv[3]);
-  }
-  if(argc > 4) {
-    increasePacket = stoi(argv[4]);
-  }
-  if(argc > 5) {
-    increasePacket = stoi(argv[5]);
-  }
+  // if(argc > 3) {
+  //   packetSize = stoi(argv[3]);
+  // }
+  // if(argc > 4) {
+  //   increasePacket = stoi(argv[4]);
+  // }
+  // if(argc > 5) {
+  //   increasePacket = stoi(argv[5]);
+  // }
 
   // get the number of games from the input file
   input >> numGames;
