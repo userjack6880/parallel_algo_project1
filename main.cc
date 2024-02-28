@@ -103,7 +103,7 @@ void server(int argc, char *argv[], int numProcessors) {
   int packetSize = 10;
   int increasePacket = 0;
   int decreasePacket = 0;
-  int maxPacket = 1;
+  int maxPacket = packetSize;
 
   // get the number of games from the input file
   input >> numGames;
