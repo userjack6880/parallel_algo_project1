@@ -34,6 +34,15 @@ string readInput(ifstream &input) {
   return inputString;
 }
 
+unsigned char inputBuffer(string inputString) {
+  unsigned char buf[IDIM*JDIM];
+  for (int i = 0; i < IDIM*JDIM; i++) {
+    buf[i] = inputString[j];
+  }
+
+  return buf;
+}
+
 void sendData(int packetSize, int gameIndex, vector<string>& inputString, int dest) {
   // initialize data for MPI
   int indexBuf[packetSize];
@@ -94,10 +103,7 @@ void server(int argc, char *argv[], int numProcessors) {
       string inputString = readInput(input);
 
       // read in the initial game state from file
-      unsigned char buf[IDIM*JDIM];
-      for (int j = 0; j < IDIM*JDIM; j++) {
-        buf[j] = inputString[j];
-      }
+      unsigned char buf[IDIM*JDIM] = inputBuffer(inputString);
 
       // initialize the game
       game_state gameBoard;
