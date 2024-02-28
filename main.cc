@@ -182,7 +182,7 @@ void server(int argc, char *argv[], int numProcessors) {
           // while we wait, go ahead and process one if there's at least two left
           while (!flag) {
             // if this is not the last game, as that's handled outside of outer while
-            if (gameIndex < numGames) {
+            if (gameIndex * numProcessors < numGames) {
               cout << "solving game " << gameIndex << " while waiting" << endl;
 
               cout << "read in initial game state" << endl;
