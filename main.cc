@@ -350,9 +350,7 @@ void client(int myID) {
 
     for (int i = 0; i < packetSize; i++) {
       unsigned char boardState[IDIM*JDIM];
-      for (int j = 0; j < IDIM*JDIM; j++) {
-        boardState[j] = boardStates[i][j];
-      }
+      inputBuffer(boardStates[i], boardState);
 
       // initialize the game
       game_state gameBoard;
