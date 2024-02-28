@@ -23,13 +23,11 @@ using std::ifstream;
 using std::ios;
 
 void sendData(int packetSize, int gameIndex, vector<string>& inputString, int dest) {
-  cout << "sending data to client " << dest << endl;
   // initialize data for MPI
   int indexBuf[packetSize];
   unsigned char stringBuf[packetSize*IDIM*JDIM];
 
   // get data for the packet size
-  cout << "creating packet of size " << packetSize << ", string buffer length " << packetSize*IDIM*JDIM << endl;
   size_t offset = 0;
   for (int i = 0; i < packetSize; i++) {
     // create string buffer
@@ -40,7 +38,6 @@ void sendData(int packetSize, int gameIndex, vector<string>& inputString, int de
 
     // create index buffer
     indexBuf[i] = gameIndex + i;
-    cout << i << ": packet game index " << indexBuf[i] << endl;
   }
   int dataSize = sizeof(stringBuf);
 
@@ -124,17 +121,14 @@ void server(int argc, char *argv[], int numProcessors) {
   }
   // if it's greater than 1, then we can break it apart
   else {
-    cout << "initialize tracking" << endl;
     // initialize tracking
     int gameIndex = 0;
     int solutions[numGames] = {0};
     vector<string> inputString(numGames);
 
     // run through the input and save each game into input vector
-    cout << "saving games into input vector" << endl;
     for (int i = 0; i < numGames; i++) {
       input >> inputString[i];
-      cout << "input " << i << ": " << inputString[i] << " solution " << solutions[i] << endl;
     }
 
     // now run over each input string and pass to clients
@@ -142,16 +136,13 @@ void server(int argc, char *argv[], int numProcessors) {
     while (1) {
       // first run
       if (firstRun) {
-        cout << "first run" << endl;
         // get the data and send packets to each client
         for (int i = 1; i < numProcessors; i++) {
           sendData(packetSize, gameIndex, inputString, i);
         }
 
         // increase the game index
-        cout << "packet sent, increasing game index from " << gameIndex;
         gameIndex += packetSize;
-        cout << " to " << gameIndex << endl;
 
         firstRun = 0;
       }
@@ -162,7 +153,6 @@ void server(int argc, char *argv[], int numProcessors) {
         int flag = 0;
         int recvPacket;
 
-        cout << "waiting for data" << endl;
         // check to see if there's data from a client
         MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
         MPI_Test(&request, &flag, &status);
@@ -170,7 +160,6 @@ void server(int argc, char *argv[], int numProcessors) {
         if (!flag) {
           // if we're waiting on a client, we have too much for them to do
           if (packetSize > 1) {
-            cout << "reducing packet size from " << packetSize << " to ";
             // record the max packet size
             if (packetSize > maxPacket) {
               maxPacket = packetSize;
@@ -183,16 +172,12 @@ void server(int argc, char *argv[], int numProcessors) {
           while (!flag) {
             // if this is not the last game, as that's handled outside of outer while
             if (gameIndex * numProcessors < numGames) {
-              cout << "solving game " << gameIndex << " while waiting" << endl;
-
-              cout << "read in initial game state" << endl;
               // read in the initial game state from the inputString vector
               unsigned char buf[IDIM*JDIM];
               for (int i = 0; i < IDIM*JDIM; i++) {
                 buf[i] = inputString[gameIndex][i];
               }
 
-              cout << "initialize game board" << endl;
               // initialize game board
               game_state gameBoard;
               gameBoard.Init(buf);
@@ -201,7 +186,6 @@ void server(int argc, char *argv[], int numProcessors) {
               int size = 0;
               bool found = depthFirstSearch(gameBoard, size, solution);
 
-              cout << "put the results into data at index " << gameIndex << endl;
               // put the results into the data
               if (found) {
                 solutions[gameIndex] = 1;
@@ -210,19 +194,15 @@ void server(int argc, char *argv[], int numProcessors) {
                 solutions[gameIndex] = 0;
               }
               // increment the index
-              cout << "increasing game index from " << gameIndex;
               gameIndex++;
-              cout << " to " << gameIndex << endl;
             }
 
             // check to see if there's data waiting
             // this should set flag to 1 and break out of the while loop
-            cout << "checking for data from client" << endl;
             MPI_Test(&request, &flag, &status);
           }
         }
         else {
-          cout << "increasing packet size from " << packetSize << " to ";
           // if the clients are too fast, then there's not enough for the clients to do
           packetSize++;
           cout << packetSize << endl;
@@ -230,7 +210,6 @@ void server(int argc, char *argv[], int numProcessors) {
 
         // reduce packet size to 1 if gameIndex + packetSize would not be valid
         if (gameIndex + packetSize > numGames) {
-          cout << "setting packet size 1" << endl;
           // record the max packet size
           if (packetSize > maxPacket) {
             maxPacket = packetSize;
@@ -240,7 +219,6 @@ void server(int argc, char *argv[], int numProcessors) {
 
         // now that we know there's something for us, let's get the rest of the data
         if (flag) {
-          cout << "data recieved" << endl;
           int indexBuf[recvPacket];
           int solutionBuf[recvPacket];
           int source = status.MPI_SOURCE;
@@ -250,25 +228,19 @@ void server(int argc, char *argv[], int numProcessors) {
           MPI_Recv(solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
           // put record the solution states
-          cout << "recording " << recvPacket << " solutions" << endl;
           for (int i = 0; i < recvPacket; i++) {
-            cout << "solution " << indexBuf[i] << ": " << solutionBuf[i] << endl;
             solutions[indexBuf[i]] = solutionBuf[i];
           }
 
           // send data back to the client
-          cout << "sending client new data" << endl;
           sendData(packetSize, gameIndex, inputString, source);
 
           // increase the game index
-          cout << "packet sent, increasing game index from " << gameIndex;
           gameIndex += packetSize;
-          cout << " to " << gameIndex << endl;
         }
 
         // breakout of while loop if the game index has moved to the end
         if (gameIndex == numGames) {
-          cout << "all games distributed, finishing" << endl;
           break;
         }
       }
@@ -303,11 +275,9 @@ void server(int argc, char *argv[], int numProcessors) {
     // solutions for problems that have a solution
     for (int i = 0; i < numGames; i++) {
       if (!solutions[i]) {
-        cout << "game " << i << ": " << inputString[i] << " no solution" << endl;
         continue;
       }
       else {
-        cout << "game " << i << ": " << inputString[i] << " solution" << endl;
         // initialize the game board
         unsigned char buf[IDIM*JDIM];
         for (int j = 0; j < IDIM*JDIM; j++) {
