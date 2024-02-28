@@ -25,9 +25,8 @@ using std::ios;
 void sendData(int packetSize, int gameIndex, vector<string>& inputString, int dest) {
   cout << "sending data to client " << dest << endl;
   // initialize data for MPI
-  int stringLen = strlen(inputString[0]);
   int indexBuf[packetSize];
-  unsigned char stringBuf[packetSize*stringLen];
+  unsigned char stringBuf[packetSize*IDIM*JDIM];
 
   // get data for the packet size
   cout << "creating packet of size " << packetSize << endl;
