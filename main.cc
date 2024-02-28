@@ -81,6 +81,7 @@ void sendData(const int packetSize, const int gameIndex, const vector<string>& i
 }
 
 void server(int argc, char *argv[], int numProcessors) {
+  cout << argc << " arguments" << endl;
 
   // check to make sure the server can run
   if(argc < 3) {
