@@ -82,8 +82,8 @@ void sendData(const int packetSize, const int gameIndex, const vector<string>& i
 void server(int argc, char *argv[], int numProcessors) {
 
   // check to make sure the server can run
-  if(argc != 3) {
-    cerr << "two arguments please!" << endl;
+  if(argc !> 2) {
+    cerr << "not enough arguments" << endl;
     MPI_Abort(MPI_COMM_WORLD,-1);
   }
 
@@ -98,8 +98,20 @@ void server(int argc, char *argv[], int numProcessors) {
   
   int count = 0;
   int numGames = 0;
-  int packetSize = 10;
+  int packetSize = 1;
+  int increasePacket = 0;
+  int decreasePacket = 0;
   int maxPacket = 1;
+
+  if(argc > 3) {
+    packetSize = argv[3];
+  }
+  if(argc > 4) {
+    increasePacket = argv[4];
+  }
+  if(argc > 5) {
+    increasePacket = argv[5];
+  }
 
   // get the number of games from the input file
   input >> numGames;
@@ -176,7 +188,7 @@ void server(int argc, char *argv[], int numProcessors) {
           // if we're waiting on a client, we have too much for them to do
           if (packetSize > 1) {
             // record the max packet size
-            if (packetSize > maxPacket) {
+            if ((packetSize > maxPacket) && decreasePacket) {
               maxPacket = packetSize;
             }
             packetSize--;
@@ -216,7 +228,9 @@ void server(int argc, char *argv[], int numProcessors) {
         }
         else {
           // if the clients are too fast, then there's not enough for the clients to do
-          packetSize++;
+          if(increasePacket) {
+            packetSize++;
+          }
         }
 
         // reduce packet size to 1 if gameIndex + packetSize would not be valid
