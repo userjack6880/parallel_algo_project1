@@ -158,14 +158,14 @@ void server(int argc, char *argv[], int numProcessors) {
         MPI_Test(&request, &flag, &status);
 
         if (!flag) {
-          // if we're waiting on a client, we have too much for them to do
-          if (packetSize > 1) {
-            // record the max packet size
-            if (packetSize > maxPacket) {
-              maxPacket = packetSize;
-            }
-            packetSize--;
-          }
+          // // if we're waiting on a client, we have too much for them to do
+          // if (packetSize > 1) {
+          //   // record the max packet size
+          //   if (packetSize > maxPacket) {
+          //     maxPacket = packetSize;
+          //   }
+          //   packetSize--;
+          // }
 
           // while we wait, go ahead and process one if there's at least two left
           while (!flag) {
