@@ -29,7 +29,7 @@ void sendData(int packetSize, int gameIndex, vector<string>& inputString, int de
   unsigned char stringBuf[packetSize*IDIM*JDIM];
 
   // get data for the packet size
-  cout << "creating packet of size " << packetSize << endl;
+  cout << "creating packet of size " << packetSize << ", string buffer length " << packetSize*IDIM*JDIM << endl;
   size_t offset = 0;
   for (int i = 0; i < packetSize; i++) {
     // create string buffer
