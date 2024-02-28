@@ -83,7 +83,7 @@ void sendData(const int packetSize, const int gameIndex, const vector<string>& i
 void server(int argc, char *argv[], int numProcessors) {
 
   // check to make sure the server can run
-  if(argc !> 2) {
+  if(argc < 4) {
     cerr << "not enough arguments" << endl;
     MPI_Abort(MPI_COMM_WORLD,-1);
   }
