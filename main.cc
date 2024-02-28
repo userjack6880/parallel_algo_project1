@@ -26,10 +26,10 @@ void sendData(int packetSize, int gameIndex, vector<string>& inputString, int de
   cout << "sending data to client " << dest << endl;
   // initialize data for MPI
   int indexBuf[packetSize];
-  unsigned char stringBuf[5000];
+  unsigned char stringBuf[packetSize*IDIM*JDIM];
 
   // get data for the packet size
-  cout << "creating packet" << endl;
+  cout << "creating packet of size " << packetSize << endl;
   size_t offset = 0;
   for (int i = 0; i < packetSize; i++) {
     // create string buffer
