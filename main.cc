@@ -108,7 +108,7 @@ void server(int argc, char *argv[], int numProcessors) {
   if(argc > 3) {
     try {
       packetSize = stoi(argv[3]);
-    } catch (cont std::invalid_argument& e) {
+    } catch (const std::invalid_argument& e) {
       cerr << "invalid packet size" << endl;
       MPI_Abort(MPI_COMM_WORLD,-1);
     }
