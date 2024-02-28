@@ -22,6 +22,18 @@ using std::ofstream;
 using std::ifstream;
 using std::ios;
 
+string readInput(ifstream &input) {
+  string inputString;
+  input >> inputString;
+
+  if (inputString.size() != IDIM*JDIM) {
+    cerr << "something wrong in input file format!" << endl;
+    MPI_Abort(MPI_COMM_WORLD,-1);
+  }
+
+  return inputString;
+}
+
 void sendData(int packetSize, int gameIndex, vector<string>& inputString, int dest) {
   // initialize data for MPI
   int indexBuf[packetSize];
@@ -78,13 +90,8 @@ void server(int argc, char *argv[], int numProcessors) {
   if (numProcessors == 1) {
     // run through each game
     for (int i = 0; i < numGames; i++) {
-      string inputString;
-      input >> inputString;
-
-      if (inputString.size() != IDIM*JDIM) {
-        cerr << "something wrong in input file format!" << endl;
-        MPI_Abort(MPI_COMM_WORLD,-1);
-      }
+      // read in a game
+      string inputString = readInput(input);
 
       // read in the initial game state from file
       unsigned char buf[IDIM*JDIM];
@@ -128,7 +135,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
     // run through the input and save each game into input vector
     for (int i = 0; i < numGames; i++) {
-      input >> inputString[i];
+      inputString[i] = readInput(input);
     }
 
     // now run over each input string and pass to clients
@@ -158,14 +165,14 @@ void server(int argc, char *argv[], int numProcessors) {
         MPI_Test(&request, &flag, &status);
 
         if (!flag) {
-          // // if we're waiting on a client, we have too much for them to do
-          // if (packetSize > 1) {
-          //   // record the max packet size
-          //   if (packetSize > maxPacket) {
-          //     maxPacket = packetSize;
-          //   }
-          //   packetSize--;
-          // }
+          // if we're waiting on a client, we have too much for them to do
+          if (packetSize > 1) {
+            // record the max packet size
+            if (packetSize > maxPacket) {
+              maxPacket = packetSize;
+            }
+            packetSize--;
+          }
 
           // while we wait, go ahead and process one if there's at least two left
           while (!flag) {
