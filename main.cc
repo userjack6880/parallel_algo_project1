@@ -102,7 +102,6 @@ void server(int argc, char *argv[], int numProcessors) {
   int packetSize = 1;
   int increasePacket = 0;
   int decreasePacket = 0;
-  int maxPacket = packetSize;
 
   if (argc > 3) {
     packetSize = stoi(argv[3]);
@@ -116,6 +115,8 @@ void server(int argc, char *argv[], int numProcessors) {
     decreasePacket = stoi(argv[5]);
     cout << "decrease packet: " << decreasePacket << endl;
   }
+
+  int maxPacket = packetSize;
 
   // get the number of games from the input file
   input >> numGames;
