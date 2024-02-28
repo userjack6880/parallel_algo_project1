@@ -40,7 +40,7 @@ unsigned char inputBuffer(string inputString) {
     buf[i] = inputString[j];
   }
 
-  return buf;
+  return *buf;
 }
 
 void sendData(int packetSize, int gameIndex, vector<string>& inputString, int dest) {
