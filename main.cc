@@ -178,9 +178,9 @@ void server(int argc, char *argv[], int numProcessors) {
 
         if (!flag) {
           // if we're waiting on a client, we have too much for them to do
-          if (packetSize > 1 && decreasePacket) {
+          if ((packetSize > 1) && decreasePacket) {
             // record the max packet size
-            if ((packetSize > maxPacket)) {
+            if (packetSize > maxPacket) {
               maxPacket = packetSize;
             }
             packetSize--;
