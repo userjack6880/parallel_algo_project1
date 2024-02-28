@@ -81,7 +81,6 @@ void sendData(const int packetSize, const int gameIndex, const vector<string>& i
 }
 
 void server(int argc, char *argv[], int numProcessors) {
-  cout << argc << " arguments" << endl;
 
   // check to make sure the server can run
   if(argc < 3) {
@@ -100,10 +99,23 @@ void server(int argc, char *argv[], int numProcessors) {
   
   int count = 0;
   int numGames = 0;
-  int packetSize = 10;
+  int packetSize = 1;
   int increasePacket = 0;
   int decreasePacket = 0;
   int maxPacket = packetSize;
+
+  if (argc > 3) {
+    packetSize = stoi(argv[3]);
+    cout << "packet size " << packetSize << endl;
+  }
+  if (argc > 4) {
+    increasePacket = stoi(argv[4]);
+    cout << "increase packet: " << increasePacket << endl;
+  }
+  if (argc > 5) {
+    decreasePacket = stoi(argv[5]);
+    cout << "decrease packet: " << decreasePacket << endl;
+  }
 
   // get the number of games from the input file
   input >> numGames;
