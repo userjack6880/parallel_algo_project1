@@ -149,7 +149,6 @@ void server(int argc, char *argv[], int numProcessors) {
     // now run over each input string and pass to clients
     int firstRun = 1;
     while (1) {
-      cout << "time: " << get_timer() << " seconds." << endl;
       // first run
       if (firstRun) {
         // get the data and send packets to each client
