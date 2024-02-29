@@ -203,30 +203,27 @@ void server(int argc, char *argv[], int numProcessors) {
           while (!flag) {
             // if this is not the last game, as that's handled outside of outer while
             if (gameIndex * numProcessors < numGames) {
-              // run as many times as we're asking the clients to
-              for (int i = 0; i < packetSize; i++) {
-                // read in the initial game state from the inputString vector
-                unsigned char buf[IDIM*JDIM];
-                inputBuffer(inputString[gameIndex], buf);
+              // read in the initial game state from the inputString vector
+              unsigned char buf[IDIM*JDIM];
+              inputBuffer(inputString[gameIndex], buf);
 
-                // initialize game board
-                game_state gameBoard;
-                gameBoard.Init(buf);
+              // initialize game board
+              game_state gameBoard;
+              gameBoard.Init(buf);
 
-                move solution[IDIM*JDIM];
-                int size = 0;
-                bool found = depthFirstSearch(gameBoard, size, solution);
+              move solution[IDIM*JDIM];
+              int size = 0;
+              bool found = depthFirstSearch(gameBoard, size, solution);
 
-                // put the results into the data
-                if (found) {
-                  solutions[gameIndex] = 1;
-                }
-                else {
-                  solutions[gameIndex] = 0;
-                }
-                // increment the index
-                gameIndex++;
+              // put the results into the data
+              if (found) {
+                solutions[gameIndex] = 1;
               }
+              else {
+                solutions[gameIndex] = 0;
+              }
+              // increment the index
+              gameIndex++;
             }
 
             // check to see if there's data waiting
