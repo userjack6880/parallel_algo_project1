@@ -1,5 +1,5 @@
 #!/bin/bash
-for start in 2 10 25 50 100
+for start in 1 2 10 25 50 100
 do
   # no increase
   for run in 01 02 04 08 16 32 64
