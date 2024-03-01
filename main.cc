@@ -183,7 +183,7 @@ void server(int argc, char *argv[], int numProcessors) {
             serverPacket = 1;
           }
           cout << "solving " << serverPacket << " puzzles" << endl;
-          for (int i = 0; i < serverPacket / 2; i++) {
+          for (int i = 0; i < serverPacket; i++) {
             bool found = findSolution(inputString[gameIndex+i]);
 
             // record solution if found
