@@ -59,7 +59,7 @@ bool findSolution(const string& inputString) {
   inputBuffer(inputString, buf);
 
   // initialize the game
-  game_state = gameBoard;
+  game_state gameBoard;
   gameBoard.Init(buf);
 
   // search for a solution
