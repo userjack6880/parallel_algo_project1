@@ -178,8 +178,12 @@ void server(int argc, char *argv[], int numProcessors) {
           }
 
           // do work
-          cout << "solving " << packetSize / 2 << " puzzles" << endl;
-          for (int i = 0; i < packetSize / 2; i++) {
+          int serverPacket = packetSize / 2;
+          if (serverPacket == 0) {
+            serverPacket = 1;
+          }
+          cout << "solving " << serverPacket << " puzzles" << endl;
+          for (int i = 0; i < serverPacket / 2; i++) {
             bool found = findSolution(inputString[gameIndex+i]);
 
             // record solution if found
@@ -192,7 +196,7 @@ void server(int argc, char *argv[], int numProcessors) {
           // increment game idnex
           if (gameIndex < numGames) {
             cout << "incrementing gameIndex from " << gameIndex;
-            gameIndex += packetSize;
+            gameIndex += serverPacket;
             cout << " to " << gameIndex << endl;
           }
         }
@@ -215,6 +219,10 @@ void server(int argc, char *argv[], int numProcessors) {
         packetSize++;
         cout << " to " << packetSize << endl;
       }
+    }
+    // one more break if there's one processor
+    if (numProcessor == 1) {
+      break;
     }
 
     // now that we know there's something for us, let's interpet it
