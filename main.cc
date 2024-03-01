@@ -214,7 +214,7 @@ void server(int argc, char *argv[], int numProcessors) {
     // now that we know there's something for us, let's interpet it
     if (flag) {
       int source = status.MPI_SOURCE;
-      cout << "message recieved from client " << source << endl;
+      cout << "message recieved from client " << source << ": " << recvPacket << endl;
 
       if (recvPacket == -1) {
         // -1 means the client died
