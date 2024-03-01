@@ -334,6 +334,7 @@ void client(int myID) {
 
   while (1) {
     // send data
+    cout << "client " << myID << ": sending " << packetSize << endl;
     MPI_Send(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
     if (packetSize > 0) {
