@@ -339,7 +339,6 @@ void client(int myID) {
 
     if (packetSize > 0) {
       // send the rest of the data if it's not dead or first run
-      MPI_Send(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
       MPI_Send(indexBuf, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD);
       MPI_Send(solutionBuf, packetSize, MPI_INT, 0, 2, MPI_COMM_WORLD);
 
