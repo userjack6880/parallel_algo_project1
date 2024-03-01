@@ -1,6 +1,5 @@
 #!/bin/bash
 #SBATCH --account=class-cse4163
-#SBATCH --job-name=Work01P
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
@@ -9,4 +8,4 @@
 #SBATCH --no-reque
 #SBATCH --qos=class-cse4163
 module load openmpi
-mpirun -np 1 ./project1 hard_sample.dat sol_hard_$4.01 $1 $2 $3 >& results_$4.01p
+mpirun -np 1 ./project1 hard_sample.dat $4/sol_hard_$3.01 $1 $2 >& $4/results_$3.01p
