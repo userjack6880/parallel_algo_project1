@@ -168,7 +168,7 @@ void server(int argc, char *argv[], int numProcessors) {
         cout << "data not recieved, checking if games available" << endl;
         if (gameIndex < numGames) {
           // if there are less than packetSize amount of games, only do one game
-          if (numGames - gameIndex < packetSize) {
+          if (numGames - gameIndex <= packetSize) {
             cout << "reducing packet from " << packetSize;
             if (maxPacket < packetSize) {
               maxPacket = packetSize;
@@ -190,9 +190,11 @@ void server(int argc, char *argv[], int numProcessors) {
           }
 
           // increment game idnex
-          cout << "incrementing gameIndex from " << gameIndex;
-          gameIndex += packetSize;
-          cout << " to " << gameIndex << endl;;
+          if (gameIndex < numGames) {
+            cout << "incrementing gameIndex from " << gameIndex;
+            gameIndex += packetSize;
+            cout << " to " << gameIndex << endl;
+          }
         }
 
         // check to see if there's data waiting
@@ -253,7 +255,7 @@ void server(int argc, char *argv[], int numProcessors) {
         cout << "checking of games available" << endl;
         // if there are less than packetSize amount of games, only do one game
         cout << "game available" << endl;
-        if (numGames - gameIndex < packetSize) {
+        if (numGames - gameIndex <= packetSize) {
           cout << "reducing packet size from " << packetSize;
           if (maxPacket < packetSize) {
             maxPacket = packetSize;
@@ -278,9 +280,11 @@ void server(int argc, char *argv[], int numProcessors) {
       sendData(packetSize, gameIndex, inputString, source);
 
       // increase the game index
-      cout << "increasing gameIndex from " << gameIndex;
-      gameIndex += packetSize;
-      cout << " to " << gameIndex << endl;
+      if (gameIndex < numGames) {
+        cout << "increasing gameIndex from " << gameIndex;
+        gameIndex += packetSize;
+        cout << " to " << gameIndex << endl;
+      }
     }
   }
 
