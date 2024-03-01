@@ -190,7 +190,7 @@ void server(int argc, char *argv[], int numProcessors) {
           }
 
           // increment game idnex
-          if (gameIndex < numGames - 1) {
+          if (gameIndex < numGames) {
             cout << "incrementing gameIndex from " << gameIndex;
             gameIndex += packetSize;
             cout << " to " << gameIndex << endl;
@@ -255,7 +255,7 @@ void server(int argc, char *argv[], int numProcessors) {
       if (gameIndex < numGames) {
         cout << "checking of games available" << endl;
         // if there are less than packetSize amount of games, only do one game
-        cout << "game available" << endl;
+        cout << "game " << gameIndex << " available" << endl;
         if (numGames - gameIndex <= packetSize) {
           cout << "reducing packet size from " << packetSize;
           if (maxPacket < packetSize) {
@@ -281,7 +281,7 @@ void server(int argc, char *argv[], int numProcessors) {
       sendData(packetSize, gameIndex, inputString, source);
 
       // increase the game index
-      if (gameIndex < numGames - 1) {
+      if (gameIndex < numGames) {
         cout << "increasing gameIndex from " << gameIndex;
         gameIndex += packetSize;
         cout << " to " << gameIndex << endl;
