@@ -144,7 +144,6 @@ void server(int argc, char *argv[], int numProcessors) {
   vector<string> inputString(numGames);
 
   // run through the input and save each game into input vector
-  cout << "reading in file" << endl;
   for (int i = 0; i < numGames; i++) {
     inputString[i] = readInput(input);
   }
@@ -157,7 +156,6 @@ void server(int argc, char *argv[], int numProcessors) {
     int recvPacket = 0;
 
     // check to see if there's data from a client
-    cout << "check for data from client" << endl;
     MPI_Irecv(&recvPacket, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &request);
     MPI_Test(&request, &flag, &status);
 
@@ -165,16 +163,13 @@ void server(int argc, char *argv[], int numProcessors) {
       // data not recieved, do wait routine
       while (!flag) {
         // check if problem exists
-        cout << "data not recieved, checking if games available" << endl;
         if (gameIndex < numGames) {
           // if there are less than packetSize amount of games, only do one game
           if (numGames - gameIndex <= packetSize) {
-            cout << "reducing packet from " << packetSize;
             if (maxPacket < packetSize) {
               maxPacket = packetSize;
             }
             packetSize = 1;
-            cout << " to 1" << endl;
           }
 
           // do work
@@ -182,12 +177,10 @@ void server(int argc, char *argv[], int numProcessors) {
           if (serverPacket == 0) {
             serverPacket = 1;
           }
-          cout << "solving " << serverPacket << " puzzles" << endl;
           for (int i = 0; i < serverPacket; i++) {
             bool found = findSolution(inputString[gameIndex+i]);
 
             // record solution if found
-            cout << "recording solution " << gameIndex << endl;
             if (found) {
               solutions[gameIndex+i] = 1;
             }
@@ -195,9 +188,7 @@ void server(int argc, char *argv[], int numProcessors) {
 
           // increment game idnex
           if (gameIndex < numGames) {
-            cout << "incrementing gameIndex from " << gameIndex;
             gameIndex += serverPacket;
-            cout << " to " << gameIndex << endl;
           }
         }
         else {
@@ -208,16 +199,13 @@ void server(int argc, char *argv[], int numProcessors) {
         }
 
         // check to see if there's data waiting
-        cout << "checking for data from client again" << endl;
         MPI_Test(&request, &flag, &status);
       }
     }
     else {
       // if the clients are too fast, then there's not enough for the clients to do
       if(increasePacket && recvPacket > 0) {
-        cout << "increasing packet size from " << packetSize;
         packetSize++;
-        cout << " to " << packetSize << endl;
       }
     }
     // one more break if there's one processor
@@ -228,28 +216,22 @@ void server(int argc, char *argv[], int numProcessors) {
     // now that we know there's something for us, let's interpet it
     if (flag) {
       int source = status.MPI_SOURCE;
-      cout << "message recieved from client " << source << ": " << recvPacket << endl;
 
       if (recvPacket == -1) {
         // -1 means the client died
-        cout << "client " << source << " died" << endl;
         killedClients++;
-        cout << killedClients << " out of " << numProcessors - 1 << " clients are dead" << endl;
 
         if (killedClients == numProcessors - 1) {
           // if all clients are killed, break out of the loop
-          cout << "ending server loop" << endl;
           break;
         }
         else {
           // if not all are killed, next loop iteration
-          cout << "next server loop" << endl;
           continue;
         }
       }
       if (recvPacket > 0) {
         // this isn't the first run, so we have more data to get and record
-        cout << "retrieving data from client " << source << endl;
         int indexBuf[recvPacket];
         int solutionBuf[recvPacket];
 
@@ -258,54 +240,41 @@ void server(int argc, char *argv[], int numProcessors) {
         MPI_Recv(solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         // put record the solution states
-        cout << "recording " << recvPacket << " solutions" << endl;
         for (int i = 0; i < recvPacket; i++) {
-          cout << "solution " << indexBuf[i] << ": " << solutionBuf[i] << endl;
           solutions[indexBuf[i]] = solutionBuf[i];
         }
       }
 
       // check if problems exist
       if (gameIndex < numGames) {
-        cout << "checking of games available" << endl;
         // if there are less than packetSize amount of games, only do one game
-        cout << "game " << gameIndex << " available" << endl;
         if (numGames - gameIndex <= packetSize) {
-          cout << "reducing packet size from " << packetSize;
           if (maxPacket < packetSize) {
             maxPacket = packetSize;
           }
           packetSize = 1;
-          cout << " to 1" << endl;
         }
       }
       else {
         // if there are no problems left, send a 0 packet
-        cout << "no problems left" << endl;
-        cout << "reducing packet size from " << packetSize;
         if (maxPacket < packetSize) {
           maxPacket = packetSize;
         }
         packetSize = 0;
-        cout << " to 0" << endl;
       }
 
       // send data to the client that responded
-      cout << "sending " << packetSize << " games to client " << source << endl;
       sendData(packetSize, gameIndex, inputString, source);
 
       // increase the game index
       if (gameIndex < numGames) {
-        cout << "increasing gameIndex from " << gameIndex;
         gameIndex += packetSize;
-        cout << " to " << gameIndex << endl;
       }
     }
   }
 
   // now we have to go back through every result and generate
   // solutions for problems that have a solution
-  cout << "processing solutions" << endl;
   for (int i = 0; i < numGames; i++) {
     if (!solutions[i]) {
       continue;
@@ -348,7 +317,6 @@ void client(int myID) {
 
   while (1) {
     // send data
-    cout << "client " << myID << ": sending " << packetSize << endl;
     MPI_Send(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
 
     if (packetSize > 0) {
@@ -379,7 +347,6 @@ void client(int myID) {
 
     // interpret message
     if (packetSize == 0) {
-      cout << "client " << myID << ": I am going to die" << endl;
       packetSize = -1;
       continue;
     }
