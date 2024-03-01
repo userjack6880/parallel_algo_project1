@@ -221,7 +221,7 @@ void server(int argc, char *argv[], int numProcessors) {
       }
     }
     // one more break if there's one processor
-    if (numProcessor == 1) {
+    if (numProcessors == 1) {
       break;
     }
 
