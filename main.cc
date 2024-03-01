@@ -242,7 +242,7 @@ void server(int argc, char *argv[], int numProcessors) {
         MPI_Recv(solutionBuf, recvPacket, MPI_INT, source, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
         // put record the solution states
-        cout << "recording " << recvPackets << " solutions" << endl;
+        cout << "recording " << recvPacket << " solutions" << endl;
         for (int i = 0; i < recvPacket; i++) {
           solutions[indexBuf[i]] = solutionBuf[i];
         }
