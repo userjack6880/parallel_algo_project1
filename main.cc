@@ -196,6 +196,12 @@ void server(int argc, char *argv[], int numProcessors) {
             cout << " to " << gameIndex << endl;
           }
         }
+        else {
+          // a bit of a wasteful way to do 1 processor, but at this point, break if that's the case
+          if (numProcessors == 1) {
+            break;
+          }
+        }
 
         // check to see if there's data waiting
         cout << "checking for data from client again" << endl;
