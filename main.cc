@@ -246,6 +246,7 @@ void server(int argc, char *argv[], int numProcessors) {
         // put record the solution states
         cout << "recording " << recvPacket << " solutions" << endl;
         for (int i = 0; i < recvPacket; i++) {
+          cout << "solution " << indexBuf[i] << ": " << solutionBuf[i] << endl;
           solutions[indexBuf[i]] = solutionBuf[i];
         }
       }
