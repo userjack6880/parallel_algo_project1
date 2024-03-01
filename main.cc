@@ -72,7 +72,7 @@ bool findSolution(const string& inputString) {
 
 void sendData(const int packetSize, const int gameIndex, const vector<string>& inputString, const int dest) {
   // always send packetSize
-  MPI_SEND(&packetSize, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
+  MPI_Send(&packetSize, 1, MPI_INT, dest, 0, MPI_COMM_WORLD);
 
   if (packetSize > 0) {
     // initialize data for MPI
@@ -131,10 +131,6 @@ void server(int argc, char *argv[], int numProcessors) {
     increasePacket = stoi(argv[4]);
     cout << "increase packet: " << increasePacket << endl;
   }
-  if (argc > 5) {
-    decreasePacket = stoi(argv[5]);
-    cout << "decrease packet: " << decreasePacket << endl;
-  }
 
   int maxPacket = packetSize;
 
@@ -170,12 +166,15 @@ void server(int argc, char *argv[], int numProcessors) {
         if (gameIndex < numGames) {
           // if there are less than packetSize amount of games, only do one game
           if (numGames - gameIndex < packetSize) {
+            if (maxPacket < packetSize) {
+              maxPacket = packetSize;
+            }
             packetSize = 1;
           }
 
           // do work
           for (int i = 0; i < packetSize; i++) {
-            findSolution(inputString[gameIndex+i]);
+            bool found = findSolution(inputString[gameIndex+i]);
 
             // record solution if found
             if (found) {
@@ -234,11 +233,17 @@ void server(int argc, char *argv[], int numProcessors) {
       if (gameIndex < numGames) {
         // if there are less than packetSize amount of games, only do one game
         if (numGames - gameIndex < packetSize) {
+          if (maxPacket < packetSize) {
+            maxPacket = packetSize;
+          }
           packetSize = 1;
         }
       }
       else {
         // if there are no problems left, send a 0 packet
+        if (maxPacket < packetSize) {
+          maxPacket = packetSize;
+        }
         packetSize = 0;
       }
 
@@ -332,7 +337,7 @@ void client(int myID) {
     // get data
     indexBuf = new int[packetSize];
     MPI_Recv(indexBuf, packetSize, MPI_INT, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    MPI_Recv(&dataSize, 1, MPI_Init, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(&dataSize, 1, MPI_INT, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     char buf[dataSize];
     MPI_Recv(buf, dataSize, MPI_CHAR, 0, 3, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
