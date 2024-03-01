@@ -365,6 +365,7 @@ void client(int myID) {
     
     // interpret message
     if (packetSize == 0) {
+      cout << "client " << myID << ": I am going to die" << endl;
       packetSize = -1;
       continue;
     }
