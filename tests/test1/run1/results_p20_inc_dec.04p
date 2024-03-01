@@ -1,8 +1,0 @@
-running on 4 processors
-packet size 20
-increase packet: 1
-decrease packet: 1
-17482 games
-Processed 17482 games with maximum packet size of 22.
-found 1156 solutions
-execution time = 205.486 seconds.
