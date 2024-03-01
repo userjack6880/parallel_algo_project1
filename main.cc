@@ -154,7 +154,7 @@ void server(int argc, char *argv[], int numProcessors) {
     MPI_Request request;
     MPI_Status status;
     int flag = 0;
-    int recvPacket;
+    int recvPacket = 0;
 
     // check to see if there's data from a client
     cout << "check for data from client" << endl;
@@ -362,7 +362,7 @@ void client(int myID) {
 
     // get message
     MPI_Recv(&packetSize, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    
+
     // interpret message
     if (packetSize == 0) {
       cout << "client " << myID << ": I am going to die" << endl;
