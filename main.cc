@@ -190,7 +190,7 @@ void server(int argc, char *argv[], int numProcessors) {
           }
 
           // increment game idnex
-          if (gameIndex < numGames) {
+          if (gameIndex < numGames - 1) {
             cout << "incrementing gameIndex from " << gameIndex;
             gameIndex += packetSize;
             cout << " to " << gameIndex << endl;
@@ -281,7 +281,7 @@ void server(int argc, char *argv[], int numProcessors) {
       sendData(packetSize, gameIndex, inputString, source);
 
       // increase the game index
-      if (gameIndex < numGames) {
+      if (gameIndex < numGames - 1) {
         cout << "increasing gameIndex from " << gameIndex;
         gameIndex += packetSize;
         cout << " to " << gameIndex << endl;
