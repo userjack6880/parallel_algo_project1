@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "run,proc,init_pkt,exec_time" > fixed_pkt.csv
+echo "run,proc,init_pkt,max_pkt,exec_time" > dyn_pkt.csv
+echo "run,proc,init_pkt,max_pkt,incr,exec_time" > all_data.csv
+
 for RUN in {1..5}
 do
 	FILES=$(ls data/${1}/run${RUN}/result*)
@@ -25,6 +29,14 @@ do
 			fi
 			((LINENUM++))
 		done < $FILE
-		echo "$RUN,$PROC,$INIT_PKT,$MAX_PKT,$INCR,$EXEC_TIME"
+		## fixed packets
+		if [[ "$INCR" == 0 ]]; then
+			echo "$RUN,$PROC,$INIT_PKT,$EXEC_TIME" >> fixed_pkt.csv
+		## dynamic packets
+		else
+			echo "$RUN,$PROC,$INIT_PKT,$MAX_PKT,$EXEC_TIME" >> dyn_pkt.csv
+		fi
+
+		echo "$RUN,$PROC,$INIT_PKT,$MAX_PKT,$INCR,$EXEC_TIME" >> all_data.csv
 	done
 done
